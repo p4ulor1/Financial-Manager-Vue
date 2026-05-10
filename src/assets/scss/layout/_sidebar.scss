@@ -1,0 +1,140 @@
+@use "../bs-variables" as bs-variables;
+@use "./layout-variables" as layout-variables;
+
+$sidebar-background: #389466;
+$logo-size: 1.5rem;
+$menu-icon-size: 1rem;
+$menu-item-outspace: map-get($map: bs-variables.$spacers, $key: 1);
+$menu-item-padding: map-get($map: bs-variables.$spacers, $key: 2);
+$border-radius: 40px;
+
+.sidebar p,
+.sidebar h1,
+.sidebar h2,
+.sidebar h3,
+.sidebar h4,
+.sidebar h5,
+.sidebar h6 {
+  margin: 0;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: layout-variables.$sidebar-close-width;
+  height: 100vh;
+  padding-left: $menu-item-padding;
+  overflow-x: hidden;
+  background: layout-variables.$sidebar-background;
+  transition: width .5s ease;
+}
+.sidebar::--webkit-scrollbar {
+  display: none;
+}
+.sidebar a {
+  text-decoration: none;
+}
+
+.sidebar .brand {
+  display: flex;
+  align-items: center;
+  gap: map-get($map: bs-variables.$spacers, $key: 3);
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: layout-variables.$header-height;
+  padding: map-get($map: bs-variables.$spacers, $key: 2) 0;
+  color: var(--bs-body-color);
+  white-space: nowrap;
+}
+.sidebar .brand-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $logo-size;
+  height: $logo-size;
+  font-size: $logo-size;
+  margin-left: calc($menu-item-outspace + $menu-item-padding);
+}
+
+.sidebar .menu {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  margin-top: map-get($map: bs-variables.$spacers, $key: 5);
+  // padding-top: map-get($map: bs-variables.$spacers, $key: 4);
+}
+.sidebar .menu li {
+  position: relative;
+  border-bottom-left-radius: 100vw;
+  border-top-left-radius: 100vw;
+  padding: $menu-item-outspace;
+}
+.sidebar .menu li.active {
+  background: linear-gradient(#1e1e2f, #1e1e24);
+}
+.sidebar .menu li.active::before,
+.sidebar .menu li.active::after {
+  content: "";
+  display: block;
+  width: $border-radius;
+  height: $border-radius;
+  position: absolute;
+  right: 0;
+  border-radius: 100vw;
+  z-index: -1;
+}
+.sidebar .menu li.active::before {
+  top: calc($border-radius * -1);
+  box-shadow:
+    calc($border-radius / 2)
+    calc($border-radius / 2)
+    0
+    #1e1e2f;
+}
+.sidebar .menu li.active::after {
+  bottom: calc($border-radius * -1);
+  box-shadow:
+    calc($border-radius / 2)
+    calc($border-radius / -2)
+    0
+    #1e1e2f;
+}
+.sidebar .menu li.active .menu-item {
+  background: layout-variables.$sidebar-background;
+}
+
+.sidebar .menu-item {
+  display: flex;
+  align-items: center;
+  gap: map-get($map: bs-variables.$spacers, $key: 2);
+  padding: $menu-item-padding;
+  border-radius: 100vw;
+  white-space: nowrap;
+  color: var(--bs-body-color);
+  overflow: hidden;
+}
+
+.sidebar .menu-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: $logo-size;
+  min-height: $logo-size;
+  font-size: $menu-icon-size;
+}
+
+.sidebar-toggled .sidebar {
+  width: layout-variables.$sidebar-open-width;
+}
+
+@media screen and (min-width: 992px) {
+  .sidebar {
+    width: layout-variables.$sidebar-open-width;
+  }
+  
+  .sidebar-toggled .sidebar {
+    width: layout-variables.$sidebar-close-width;
+  }
+}

@@ -1,0 +1,6 @@
+.modal {
+
+  .btn-close {
+    --btn-close-color: var(--#{$prefix}modal-color);
+  }
+}

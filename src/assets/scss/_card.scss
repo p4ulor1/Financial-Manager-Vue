@@ -1,0 +1,35 @@
+@use '@/assets/scss/bs-configuration';
+
+.card {
+  position: relative;
+  width: 100%;
+  background: var(--polar-night1);
+  border-radius: bs-configuration.$border-radius;
+  box-shadow: bs-configuration.$box-shadow;
+  padding: map-get($map: bs-configuration.$spacers, $key: 2);
+  margin-bottom: map-get($map: bs-configuration.$spacers, $key: 2);
+  
+  .card-header {
+    position: relative;
+  }
+  
+  .card-body {
+    position: relative;
+    margin: map-get($map: bs-configuration.$spacers, $key: 3) map-get($map: bs-configuration.$spacers, $key: 0);
+  }
+  
+  .card-footer {
+    position: relative;
+  }
+
+  .card-category {
+    font-size: bs-configuration.$font-size-sm;
+    font-weight: 300;
+    margin-bottom: 0;
+  }
+
+  .card-title {
+    font-weight: 400;
+    color: var(--body-color);
+  }
+}

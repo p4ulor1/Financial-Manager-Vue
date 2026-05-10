@@ -1,0 +1,63 @@
+:root,
+[data-theme-mode="light"] {
+  // Colors
+  @each $color, $value in $colors {
+    --#{$prefix}#{$color}: #{$value};
+  }
+  @each $color, $value in $theme-colors {
+    --#{$prefix}#{$color}: #{$value};
+  }
+
+  @each $color, $value in $theme-colors-rgb {
+    --#{$prefix}#{$color}-rgb: #{$value};
+  }
+
+  @each $color, $value in $theme-colors-text {
+    --#{$prefix}#{$color}-text-emphasis: #{$value};
+  }
+  // Nord-Colors
+  @each $color, $value in $nord-colors {
+    --#{$prefix}#{$color}: #{$value};
+  }
+  @each $color, $value in $theme-colors {
+    --#{$prefix}#{$color}: #{$value};
+  }
+
+  // Fonts
+  --#{$prefix}font-sans-serif: #{inspect($font-family-sans-serif)};
+  --#{$prefix}font-monospace: #{inspect($font-family-monospace)};
+
+  // Root and body
+  @include rfs($font-size-base, --#{$prefix}body-font-size);
+  --#{$prefix}body-font-family: #{inspect($font-family-base)};
+  --#{$prefix}body-font-weight: #{$font-weight-base};
+  --#{$prefix}body-line-height: #{$line-height-base};
+  --#{$prefix}body-color: #{$body-color};
+  --#{$prefix}body-bg: #{$body-bg};
+
+  // Headings
+  --#{$prefix}heading-color: #{$headings-color};
+
+  // Border
+  --#{$prefix}border-width: #{$border-width};
+
+  // scss-docs-start root-border-var
+  --#{$prefix}border-width: #{$border-width};
+  --#{$prefix}border-style: #{$border-style};
+  --#{$prefix}border-color: #{$border-color};
+  --#{$prefix}border-color-translucent: #{$border-color-translucent};
+
+  --#{$prefix}border-radius: #{$border-radius};
+  --#{$prefix}border-radius-sm: #{$border-radius-sm};
+  --#{$prefix}border-radius-lg: #{$border-radius-lg};
+  --#{$prefix}border-radius-xl: #{$border-radius-xl};
+  --#{$prefix}border-radius-xxl: #{$border-radius-xxl};
+  --#{$prefix}border-radius-2xl: var(--#{$prefix}border-radius-xxl); // Deprecated in v5.3.0 for consistency
+  --#{$prefix}border-radius-pill: #{$border-radius-pill};
+  // scss-docs-end root-border-var
+}
+
+[data-theme-mode="dark"] {
+  --#{$prefix}body-color: #{$body-color-dark};
+  --#{$prefix}body-bg: #{$body-bg-dark};
+}

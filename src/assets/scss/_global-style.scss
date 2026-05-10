@@ -1,0 +1,35 @@
+@use '@/assets/scss/bs-configuration';
+
+th {
+  color: var(--body-color) !important;
+}
+
+.container {
+  padding: map-get($map: bs-configuration.$spacers, $key: 3);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+section {
+  margin-bottom: map-get($map: bs-configuration.$spacers, $key: 5);
+}
+
+.bg-gradient-warning {
+  @include bs-configuration.gradient-directional(var(--orange), var(--warning));
+}
+
+.bg-gradient-primary {
+  @include bs-configuration.gradient-directional(var(--primary), var(--indigo));
+}
+
+.bg-gradient-info {
+  @include bs-configuration.gradient-directional(var(--info), var(--cyan));
+}
+
+.bg-gradient-danger {
+  @include bs-configuration.gradient-directional(var(--danger), var(--orange));
+}
+
+.bg-gradient-success {
+  @include bs-configuration.gradient-directional(var(--success), var(--frost0));
+}

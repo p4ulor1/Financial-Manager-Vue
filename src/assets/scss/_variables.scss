@@ -1,0 +1,63 @@
+@use "@/assets/scss/nord-palette";
+// scss-docs-start bootstrap-variables-override
+// Prefix
+$prefix: "";
+
+// Body
+$body-bg-dark: nord-palette.$polar-night0;
+$body-color-dark: nord-palette.$snow-storm1;
+
+// Font
+$font-size-base: .875rem;
+$font-family-base: "poppins", sans-serif;
+
+// Headings
+$headings-color: nord-palette.$snow-storm2;
+
+// Colors
+$blue:    #81A1C1;
+$indigo:  #5E81AC;
+$purple:  #B48EAD;
+$pink:    #D7A9B0;
+$red:     #BF616A;
+$orange:  #D08770;
+$yellow:  #EBCB8B;
+$green:   #42b883;
+$teal:    #4C9FBC;
+$cyan:    #88C0D0;
+$info:    $teal;
+
+// colors-map
+$nord-colors: (
+  "polar-night0": nord-palette.$polar-night0,
+  "polar-night1": nord-palette.$polar-night1,
+  "polar-night2": nord-palette.$polar-night2,
+  "polar-night3": nord-palette.$polar-night3,
+  "snow-storm0":  nord-palette.$snow-storm0,
+  "snow-storm1":  nord-palette.$snow-storm1,
+  "snow-storm2":  nord-palette.$snow-storm2,
+  "frost0":       nord-palette.$frost0,
+  "frost1":       nord-palette.$frost1,
+  "frost2":       nord-palette.$frost2,
+  "frost3":       nord-palette.$frost3,
+  "aurora0":      nord-palette.$aurora0,
+  "aurora1":      nord-palette.$aurora1,
+  "aurora2":      nord-palette.$aurora2,
+  "aurora3":      nord-palette.$aurora3,
+  "aurora4":      nord-palette.$aurora4,
+);
+
+// Table
+$table-bg: var(--section-bg);
+
+// Spinner
+$spinner-width: 1.5rem;
+$spinner-height: 1.5rem;
+$spinner-border-width: .2em;
+
+// Border
+$border-color: #9a9a9a;
+
+// Modal
+$modal-content-color: $body-color-dark;
+// scss-docs-end bootstrap-variables-override

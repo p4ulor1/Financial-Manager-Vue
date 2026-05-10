@@ -1,0 +1,174 @@
+@use "../bs-variables" as bs-variables;
+@use "../bs-dependecies";
+
+@use "./layout-variables" as layout-variables;
+@use "./sidebar";
+
+$background-color: linear-gradient(#1e1e2f, #1e1e24);
+
+body {
+  overflow: hidden;
+  background: $background-color;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  background: layout-variables.$card-background;
+  border-radius: bs-variables.$border-radius;
+  box-shadow: bs-variables.$box-shadow;
+  color: layout-variables.$card-font-color;
+  
+  .card-header {
+    padding: calc(1rem * 0.5);
+    padding-bottom: 0;
+  }
+  
+  .card-body {
+    padding: calc(1rem * 0.5) calc(1rem * 0.25);
+  }
+  
+  .card-footer {
+    padding: calc(1rem * 0.5) calc(1rem * 0.25);
+  }
+
+  .card-category {
+    font-size: bs-variables.$font-size-sm;
+    font-weight: 300;
+  }
+
+  .card-title {
+    font-weight: 300;
+    color: bs-variables.$body-color-dark;
+  }
+}
+
+.main-panel {
+  background: $background-color;
+}
+
+.wrapper {
+  width: calc(100% - layout-variables.$sidebar-close-width);
+  height: 100vh;
+  margin-left: layout-variables.$sidebar-close-width;
+  transition: .5s ease;
+}
+
+.sidebar-toggled .wrapper {
+  margin-left: layout-variables.$sidebar-open-width;
+}
+
+header p,
+header h1,
+header h2,
+header h3,
+header h4,
+header h5,
+header h6 {
+  margin: 0;
+}
+header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: layout-variables.$header-height;
+  padding: 0 map-get($map: bs-variables.$spacers, $key: 3);
+  background: layout-variables.$sidebar-background;
+}
+header::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  bottom: -40px;
+  left: 0;
+  border-radius: 100vw;
+  box-shadow: -20px -20px 0 layout-variables.$sidebar-background;
+}
+header .user {
+  width: 30px;
+  height: 30px;
+  border-radius: 100vw;
+  background: lightgray;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.sidebar-toggler {
+  width: 20px;
+}
+.sidebar-toggler::before,
+.sidebar-toggler::after,
+.sidebar-toggler div {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  border-radius: 100vw;
+  transition: .5s;
+  background: white;
+}
+.sidebar-toggler div {
+  margin: 5px 0;
+  width: 70%;
+}
+.sidebar-toggled .sidebar-toggler:before {
+  transform: translateY(6px) rotate(135deg);
+}
+.sidebar-toggled .sidebar-toggler:after{
+  transform: translateY(-6px) rotate(-135deg);
+}
+.sidebar-toggled .sidebar-toggler div {
+  transform: scale(0);
+}
+
+.content {
+  width: 100%;
+  height: calc(100% - layout-variables.$header-height);
+  padding: 0 map-get($map: bs-variables.$spacers, $key: 3);
+  padding-top: map-get($map: bs-variables.$spacers, $key: 4);
+  padding-bottom: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  section {
+    margin-bottom: map-get($map: bs-variables.$spacers, $key: 5);
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .wrapper {
+    width: calc(100% - layout-variables.$sidebar-open-width);
+    margin-left: layout-variables.$sidebar-open-width;
+  }
+  
+  .sidebar-toggled .wrapper {
+    width: calc(100% - layout-variables.$sidebar-close-width);
+    margin-left: layout-variables.$sidebar-close-width;
+  }
+  
+  .sidebar-toggler::before {
+    transform: translateY(6px) rotate(135deg);
+  }
+  .sidebar-toggler::after{
+    transform: translateY(-6px) rotate(-135deg);
+  }
+  .sidebar-toggler div {
+    transform: scale(0);
+  }
+  .sidebar-toggled .sidebar-toggler::before {
+    transform: translateY(0px) rotate(0deg);
+  }
+  .sidebar-toggled .sidebar-toggler::after{
+    transform: translateY(0px) rotate(0deg);
+  }
+  .sidebar-toggled .sidebar-toggler div {
+    transform: scale(1);
+  }
+}

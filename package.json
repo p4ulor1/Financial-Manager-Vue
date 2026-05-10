@@ -1,0 +1,30 @@
+{
+  "name": "vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "test:use-cases": "vitest src/financialManager/useCases"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.2",
+    "chartjs-plugin-annotation": "^3.1.0",
+    "pinia": "^3.0.1",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/test-utils": "^2.4.5",
+    "jsdom": "^24.0.0",
+    "sass": "^1.72.0",
+    "vite": "^5.1.6",
+    "vitest": "^1.4.0"
+  }
+}

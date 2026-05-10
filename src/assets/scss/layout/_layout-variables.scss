@@ -1,0 +1,8 @@
+@use "../bs-variables" as bs-variables;
+
+$card-background: #27293d;
+$sidebar-background: #42b883;
+$sidebar-open-width: 280px;
+$sidebar-close-width: calc(3 * map-get($map: bs-variables.$spacers, $key: 2) + 2 * map-get($map: bs-variables.$spacers, $key: 1) + 1.5rem);
+$header-height: 70px;
+$card-font-color: #9a9a9a;
