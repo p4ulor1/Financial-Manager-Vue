@@ -11,5 +11,6 @@ export default function useRouterManager() {
     goToExpense:      () => router.push('/expense'),
     goToContribution: () => router.push('/contribution'),
     goToCreditCard:   () => router.push('/creditCard'),
+    goToCalculator:   () => router.push('/calculator')
   };
 };

@@ -12,8 +12,9 @@
   const dashboard       = ref(null);
   const income          = ref(null);
   const expense         = ref(null);
-  const contribution    = ref(null);
   const creditCard      = ref(null);
+  const contribution    = ref(null);
+  const calculator      = ref(null);
   const scrollWrapper   = ref(null);
   const selectDateModal = ref(null);
   // end
@@ -60,6 +61,12 @@
           sectionTitle.value = "Cartões de Crédito"
           activeIcon = creditCard.value;
           creditCard.value.classList.toggle('active');
+          break;
+
+        case "calculator":
+          sectionTitle.value = "Calculadoras"
+          activeIcon = calculator.value;
+          calculator.value.classList.toggle('active');
           break;
       }
     }, { immediate: true });
@@ -119,7 +126,7 @@
           </a>
         </li>
         <li ref="calculator">
-          <a class="menu-item">
+          <a class="menu-item" @click="changeRoute(routerManager.goToCalculator)">
             <i class="bi bi-calculator menu-icon"></i>
             <span class="menu-label">Calculadora</span>
           </a>
