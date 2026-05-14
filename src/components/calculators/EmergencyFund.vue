@@ -53,20 +53,20 @@
           <!-- MONTH RESULT ROW -->
           <div class="row">
             <div class="col">
-              <h4>Meses Totais:</h4>
+              <h5>Meses Totais:</h5>
             </div>
             <div class="col">
-              <h4 class="text-end ">12</h4>
+              <h5 class="text-end ">12</h5>
             </div>
           </div>
           <!-- END MONTH RESULT ROW -->
           <!-- RESULT ROW -->
           <div class="row">
             <div class="col">
-              <h4>Resultado:</h4>
+              <h5>Resultado:</h5>
             </div>
             <div class="col">
-              <h4 class="text-end">R$ <span>0,00</span></h4>
+              <h5 class="text-end">R$ <span>0,00</span></h5>
             </div>
           </div>
           <!-- END RESULT ROW -->

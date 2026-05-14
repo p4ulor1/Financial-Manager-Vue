@@ -81,6 +81,8 @@
 
     scrollWrapper.value.scroll({top: 0})
 
+    document.querySelector('.layout-container').classList.remove('open-sidebar');
+
     changeRouterFunction();
   }
 </script>
@@ -145,7 +147,7 @@
         </div>
         <div class="sidebar-toggler-fix"></div>
 
-        <h4 class="section-title">{{ sectionTitle }}</h4>
+        <h4 class="section-title text-center">{{ sectionTitle }}</h4>
 
         <div class="balance" @click="selectDateModal.show()">
           <p class="text-center mb-1">Data</p>
