@@ -15,6 +15,7 @@
   const creditCard      = ref(null);
   const contribution    = ref(null);
   const calculator      = ref(null);
+  const budgets         = ref(null);
   const scrollWrapper   = ref(null);
   const selectDateModal = ref(null);
   // end
@@ -131,6 +132,12 @@
           <a class="menu-item" @click="changeRoute(routerManager.goToCalculator)">
             <i class="bi bi-calculator menu-icon"></i>
             <span class="menu-label">Calculadora</span>
+          </a>
+        </li>
+        <li ref="budgets">
+          <a class="menu-item" @click="changeRoute(routerManager.goToBudget)">
+            <i class="bi bi-journals menu-icon"></i>
+            <span class="menu-label">Orçamentos</span>
           </a>
         </li>
       </ul>
