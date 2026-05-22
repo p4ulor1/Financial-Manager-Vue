@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Layout1     from '@/layout/Layout-1.vue';
 import Orcamentos  from '@/views/Orcamentos.vue';
 import Dashboard   from '@/views/Dashboard.vue';
-import Entrada     from '@/views/Entrada.vue';
+import Income      from '@/views/Income.vue';
 import Aporte      from '@/views/Aporte.vue';
 import Despesas    from '@/views/Despesas.vue';
 import Cartao      from '@/views/Cartao.vue';
@@ -29,7 +29,7 @@ const router = createRouter({
         {
           path: '/income',
           name: 'income',
-          component: Entrada
+          component: Income
         },
         {
           path: '/contribution',

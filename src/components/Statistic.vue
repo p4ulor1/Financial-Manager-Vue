@@ -1,4 +1,6 @@
 <script setup>
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
+
   const props = defineProps({
     category:  {type: String},
     title:     {type: String},
@@ -20,7 +22,7 @@
           <p>
             {{ labels[index - 1] }}:
             <div v-if="!props.statisticsData[index - 1]" class="spinner-border spinner-border-sm" role="status"></div>
-            <span v-else>{{ props.statisticsData[index - 1] }}</span>
+            <span v-else>{{ formatIntToCurrency(props.statisticsData[index - 1] * 100) }}</span>
           </p>
 
           <div v-if="index < (labels.length)" class="hr"></div>

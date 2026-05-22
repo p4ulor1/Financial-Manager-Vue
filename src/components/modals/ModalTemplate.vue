@@ -4,7 +4,7 @@
 
   const modalEl = ref(null);
   let   modal   = null;
-  
+
   const props = defineProps({
     title: {type: String, required: true}
   });
@@ -30,7 +30,7 @@
 </script>
 
 <template>
-  <div class="modal fade" id="myModal" ref="modalEl" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" ref="modalEl" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">

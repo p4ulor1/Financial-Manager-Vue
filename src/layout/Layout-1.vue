@@ -2,7 +2,7 @@
   import { ref, watch, onMounted } from 'vue';
   import { useRoute } from 'vue-router';
   import useRouterManager from '@/router/useRouterManager';
-  import SelectDateModal from '@/components/SelectDateModal.vue';
+  import SelectDateModal from '@/components/modals/SelectDateModal.vue';
 
   // router
   const routerManager = useRouterManager();

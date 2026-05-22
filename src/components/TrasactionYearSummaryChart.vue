@@ -23,12 +23,24 @@
   let chart = null;
   const chartEl = ref(null);
   const props = defineProps({
-    data: {type: Array}, // @type: number[]
     category: {},
     title: {},
     chartBgColor: {},
     stepSize: {default: 1000}
   });
+
+  function setChartData(data) {
+    chart.data.datasets[0].data = data;
+
+    chart.update();
+  }
+  function updateChartData(data) {
+    chart.data.datasets[0].data = data;
+
+    chart.update();
+  }
+
+  defineExpose({setChartData, updateChartData});
 
   onMounted(() => {
     chart = new Chart(chartEl.value, {
@@ -68,12 +80,6 @@
         }
       }
     });
-
-    watch(() => props.data, () => {
-      chart.data.datasets[0].data = props.data;
-
-      chart.update();
-    }, {immediate: true});
   });
 </script>
 
