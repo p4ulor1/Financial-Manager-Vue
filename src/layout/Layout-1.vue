@@ -1,28 +1,31 @@
 <script setup>
-  import { ref, watch, onMounted } from 'vue';
+  import { ref, watch, onMounted, computed } from 'vue';
   import { useRoute } from 'vue-router';
   import useRouterManager from '@/router/useRouterManager';
   import SelectDateModal from '@/components/modals/SelectDateModal.vue';
+  import { formatISOToBrDate } from '@/vueUtils/dateUtils';
+  import { dateStore } from '@/stores/dateStore';
 
   // router
   const routerManager = useRouterManager();
-  const route         = useRoute();
-  // end
+  const route = useRoute();
   // dom
-  const dashboard       = ref(null);
-  const income          = ref(null);
-  const expense         = ref(null);
-  const creditCard      = ref(null);
-  const contribution    = ref(null);
-  const calculator      = ref(null);
-  const budgets         = ref(null);
-  const scrollWrapper   = ref(null);
-  const selectDateModal = ref(null);
-  // end
+  const dateModalEl = ref(null);
+  const dashboard = ref(null);
+  const income = ref(null);
+  const expense = ref(null);
+  const creditCard = ref(null);
+  const contribution = ref(null);
+  const calculator = ref(null);
+  const budgets = ref(null);
+  const scrollWrapper = ref(null);
   // utils
   const sectionTitle = ref('');
-  let   activeIcon   = null;
-  // end
+  let activeIcon = null;
+  // dateStore computed
+  const date = computed(() => {
+    return formatISOToBrDate(dateStore._ISODate);
+  });
 
   onMounted(() => {
     watch(() => route.name, (newRoute) => {
@@ -131,13 +134,19 @@
         <li ref="calculator">
           <a class="menu-item" @click="changeRoute(routerManager.goToCalculator)">
             <i class="bi bi-calculator menu-icon"></i>
-            <span class="menu-label">Calculadora</span>
+            <span class="menu-label">Calculadoras</span>
           </a>
         </li>
         <li ref="budgets">
           <a class="menu-item" @click="changeRoute(routerManager.goToBudget)">
             <i class="bi bi-journals menu-icon"></i>
             <span class="menu-label">Orçamentos</span>
+          </a>
+        </li>
+        <li>
+          <a class="menu-item" @click="dateModalEl.show()">
+            <i class="bi bi-calendar3 menu-icon"></i>
+            <span class="menu-label">Trocar Data</span>
           </a>
         </li>
       </ul>
@@ -156,9 +165,9 @@
 
         <h4 class="section-title text-center">{{ sectionTitle }}</h4>
 
-        <div class="balance" @click="selectDateModal.show()">
+        <div class="balance" @click="dateModalEl.show()">
           <p class="text-center mb-1">Data</p>
-          <p>**date here**</p>
+          <p>{{ date }}</p>
         </div>
       </header>
 
@@ -169,7 +178,7 @@
           </Transition>
         </router-view>
 
-        <SelectDateModal ref="selectDateModal"
+        <SelectDateModal ref="dateModalEl"
         ></SelectDateModal>
       </main>
     </div>
