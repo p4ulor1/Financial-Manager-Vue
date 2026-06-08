@@ -1,7 +1,6 @@
 <script setup>
-  import { ref, onMounted, watch } from 'vue';
-  import { getChartGradient } from "@/assets/js/utils/getChartGradient";
-  import { float2string } from '@/vueUtils/float2string';
+  import { onMounted, watch, shallowRef } from 'vue';
+  import { colors } from "@/assets/js/utils/colors";
   import {
     Chart,
     BarController,
@@ -19,14 +18,15 @@
     CategoryScale,
     LinearScale
   );
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
 
   let chart = null;
-  const chartEl = ref(null);
+  const chartEl = shallowRef(null);
   const props = defineProps({
+    year: {},
     category: {},
-    title: {},
-    chartBgColor: {},
-    stepSize: {default: 1000}
+    label: {},
+    chartBgColor: {}
   });
 
   function setChartData(data) {
@@ -48,34 +48,22 @@
       data: {
         labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
         datasets: [{
+          label: props.label,
           data: [],
-          label: 'Entrada',
-          backgroundColor: context => {
-            const chart = context.chart;
-            const { ctx, chartArea } = chart;
-
-            if (!chartArea) return;
-
-            return getChartGradient(ctx, chartArea, `${props.chartBgColor}`, `${props.chartBgColor}80`);
-          }
-        }]
+          backgroundColor: props.chartBgColor
+        }],
       },
       options: {
         scales: {
           y: {
             ticks: {
-              callback: value => `${float2string(value)}`,
-              stepSize: props.stepSize
+              callback: value => `${formatIntToCurrency(value)}`
             }
           }
         },
         plugins: {
           tooltip: {
-            callbacks: {
-              label: ctx => {
-                return `R$ ${float2string(ctx.parsed.y)}`;
-              }
-            }
+            callbacks: {label: ctx => `R$ ${formatIntToCurrency(ctx.parsed.y)}`}
           }
         }
       }
@@ -87,7 +75,7 @@
   <div class="card card-chart">
     <div class="card-header">
       <p class="card-category">{{ props.category }}</p>
-      <h2 class="card-title">{{ props.title }}</h2>
+      <h2 class="card-title">{{ props.year }}</h2>
     </div>
     <div class="card-body">
       <canvas class="chart" ref="chartEl"></canvas>

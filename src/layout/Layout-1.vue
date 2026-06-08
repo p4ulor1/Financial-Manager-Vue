@@ -166,7 +166,12 @@
         <h4 class="section-title text-center">{{ sectionTitle }}</h4>
 
         <div class="balance" @click="dateModalEl.show()">
-          <p class="text-center mb-1">Data</p>
+          <div class="d-flex justify-content-center mb-1">
+            <i class="bi bi-pencil-fill me-1"></i>
+            <div class="">
+              <p class="text-center mt-1">Data</p>
+            </div>
+          </div>
           <p>{{ date }}</p>
         </div>
       </header>

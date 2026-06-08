@@ -1,7 +1,7 @@
 <script setup>
   const props = defineProps({
-    category:  {type: String},
-    title:     {type: String},
+    category: {type: String},
+    title: {type: String},
     headers: {type: Array},
     /*
      * @typedef {Object} TableData

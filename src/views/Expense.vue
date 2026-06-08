@@ -1,10 +1,11 @@
 <script setup>
   import InfoCard from '@/components/InfoCard.vue';
-  import ExpenseYearSummaryChart from '@/components/ExpenseYearSummaryChart.vue';
+  import TrasactionYearSummaryChart from '@/components/TrasactionYearSummaryChart.vue';
   import Statistic from '@/components/Statistic.vue';
   import Table from '@/components/Table.vue';
   import FloatBtn from '@/components/FloatBtn.vue';
   import CreateExpense from '@/components/modals/CreateExpense.vue';
+  import { colors } from '@/assets/js/utils/colors';
   import { ref, computed, onMounted, watch } from 'vue';
   import { formatISOToBrDate, parseISODate, formatBrDateToISO } from '@/vueUtils/dateUtils';
   import { formatIntToCurrency, formatCurrencyToInt } from '@/vueUtils/currencyUtils';
@@ -26,7 +27,6 @@
   // DOM
   const chartEl = ref(null);
   const createExpenseEl = ref(null);
-  const createCCExpenseEl = ref(null);
   // variaveis de front end dependentes do dominio
   const tableData = computed(() => {
     if (monthExpenses.value === null) return null;
@@ -143,11 +143,14 @@
     </section>
 
     <section>
-      <ExpenseYearSummaryChart
+      <TrasactionYearSummaryChart
         ref="chartEl"
         :year="parseISODate(date).year"
+        category="Histórico de Despesas no Ano"
+        label="Entradas"
+        :chart-bg-color="colors.danger"
       >
-      </ExpenseYearSummaryChart>
+      </TrasactionYearSummaryChart>
     </section>
 
     <section>

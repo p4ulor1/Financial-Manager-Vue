@@ -7,7 +7,6 @@
   import CreateIncome from '@/components/modals/CreateIncome.vue';
   import { computed, ref, watch, onMounted } from 'vue';
   import { colors } from '@/assets/js/utils/colors';
-  import { float2string } from '@/vueUtils/float2string';
   import { formatBrDateToISO, parseISODate, parseBrDate, formatISOToBrDate } from '@/vueUtils/dateUtils';
   import { formatIntToCurrency, formatCurrencyToInt } from '@/vueUtils/currencyUtils';
   // Domain dependecies
@@ -19,92 +18,21 @@
   import addIncome from '@/financialManager/useCases/income/addIncome';
   import removeIncome from '@/financialManager/useCases/income/removeIncome';
 
-  const date = computed(() => {
-    return dateStore._ISODate;
-  });
+  const repo = new MockIncomeRepository();
+  const date = computed(() => dateStore._ISODate);
+  // variaveis de Dominio
+  const yearIncomesValue = ref(null);
+  const monthIncomes = ref(null);
+  const last12MonthsValues = ref(null);
   // dom
   const modalEl = ref(null);
   const chartEl = ref(null);
-  // variaveis de Dominio
-  const repo = new MockIncomeRepository();
-  const yearIncomesValue = ref(null);
-  const last12MonthsValues = ref(null);
-  const yearIncomesAmount = computed(() => {
-    if (yearIncomesValue.value === null)
-      return null;
-
-    return yearIncomesValue.value.reduce((acc, cur) => acc + cur, 0) / 100;
-  });
-  const last12MonthsAverage = computed(() => {
-    if (last12MonthsValues.value === null)
-      return null;
-
-    const amount = last12MonthsValues.value.reduce((acc, cur) => acc + cur, 0);
-    return (amount / 12) / 100;
-  });
-  const yearIncomesAverage = computed(() => {
-    if (yearIncomesValue.value === null)
-      return null;
-
-    const amount = yearIncomesValue.value.reduce((acc, cur) => acc + cur, 0);
-    return (amount / 12) / 100;
-  });
-  const monthIncomes = ref(null);
   // variaveis de front end dependentes do dominio
-  const monthIncome = computed(() => {
-    if (yearIncomesValue.value === null)
-      return null;
-
-    return formatIntToCurrency(yearIncomesValue.value[parseISODate(date.value).month - 1]);
-  });
-  const statisticsData = computed(() => {
-    return [yearIncomesAverage.value, last12MonthsAverage.value, yearIncomesAmount.value];
-  }); // ToDo: Substituir pela estatistica real
-  /*
-   * @typedef {Object} IncomeTable
-   * @property {string} id
-   * @property {Array} data
-   *
-   * @type {Array<IncomeTable>|null}
-   */
   const tableData = computed(() => {
     if (monthIncomes.value === null)
-      return null;
+    return null;
 
-    return tableDataBuilder(monthIncomes.value);
-  })
-
-  // watch date
-  watch(date, () => {
-    getIncomesValueByYear(repo, parseISODate(date.value).year).then(
-      (incomesValue) => {
-        yearIncomesValue.value = incomesValue;
-        chartEl.value.setChartData(incomesValue.map(value => value / 100));
-      }
-    );
-    // Update monthIncomes
-    getIncomesByMonth(repo, date.value.substring(0,7)).then(incomes => {
-      monthIncomes.value = incomes;
-    });
-  });
-
-  /*
-   * @typedef {Object} createIncome
-   * @property {string} id
-   * @property {string} description
-   * @property {string} incomeType
-   * @property {string} date - ISO Format
-   * @property {number} value - Integer
-   *
-   * @typedef {Object} tableData
-   * @property {String} description
-   * @property {Array} data
-   *
-   * @param {Array<>} incomesOfMonth
-   * @returns {tableData}
-   */
-  function tableDataBuilder(incomesOfMonth) {
-    return incomesOfMonth.map((income, index) => ({
+    return monthIncomes.value.map(income => ({
       id: income.id,
       data: [
         income.description,
@@ -113,68 +41,86 @@
         formatIntToCurrency(income.value)
       ]
     }));
-  }
-  /*
-   * @typedef {Object} createIncome
-   * @property {string} description
-   * @property {string} incomeType
-   * @property {string} date - Br Format
-   * @property {string} value - Currency Format
-   *
-   * @param {create_Income} income
-   */
+  });
+  const monthIncome = computed(() => {
+    if (yearIncomesValue.value === null) return null;
+
+    const month = parseISODate(date.value).month;
+
+    return formatIntToCurrency(yearIncomesValue.value[month - 1]);
+  });
+  const statisticsData = computed(() => {
+    if (last12MonthsValues.value === null) return [];
+
+    const last12MonthsAverage = last12MonthsValues.value.reduce((accumulator, currentValue, currentIndex) => {
+      if (currentIndex === 11) return (accumulator + currentValue) / 12;
+
+      return accumulator + currentValue;
+    }, 0);
+    const yearAmount = yearIncomesValue.value.reduce((accumulator, currentValue, currentIndex) => {
+      return accumulator + currentValue;
+    }, 0);
+    const yearAverage = yearAmount/12;
+
+    return [yearAverage / 100, last12MonthsAverage / 100, yearAmount / 100];
+  });
+
+  watch(yearIncomesValue, (newIncomesValue) => {
+    chartEl.value.setChartData(newIncomesValue);
+  }, { deep: true });
+  // watch date
+  watch(date, async (newDate, oldDate) => {
+    const incomes = await getIncomesByMonth(repo, date.value.substring(0,7));
+    monthIncomes.value = incomes;
+
+    const parsedNewDate = parseISODate(newDate);
+    const parsedOldDate = parseISODate(oldDate);
+
+    if (parsedNewDate.year !== parsedOldDate.year) {
+      const incomesValue = await getIncomesValueByYear(repo, parseISODate(date.value).year);
+      yearIncomesValue.value = incomesValue;
+    };
+  });
+
+  // METHODS
   async function onCreateIncome(income) {
     let normalizedIncome = {...income};
-
     normalizedIncome.date = formatBrDateToISO(income.date);
     normalizedIncome.value = formatCurrencyToInt(income.value);
 
     const addedIncome = await addIncome(repo, normalizedIncome);
+    const month = parseISODate(date.value).month;
+
+    monthIncomes.value.push(addedIncome);
+    yearIncomesValue.value[month - 1] += addedIncome.value;
 
     const parsedMonth = parseISODate(addedIncome.date).month - 1;
     const currentMonthIncomeValue = yearIncomesValue.value[parsedMonth];
 
-    yearIncomesValue.value[parsedMonth] = currentMonthIncomeValue + addedIncome.value;
-    // Update chart
-    chartEl.value.updateChartData(yearIncomesValue.value.map(value => value / 100));
-    // Update last12MonthsValues
-    last12MonthsValues.value = await getLast12MonthsValues(repo, dateStore.toCurrentISOString());
-    monthIncomes.value.push(addedIncome);
+    last12MonthsValues.value = await getLast12MonthsValues(repo, date.value);
   };
-  /*
-   * @typedef {Object} incomeToRemove
-   * @property {String} description
-   * @property {Array} Data
-   *
-   * @param {incomeToRemove} income
-   */
-  async function onRemoveIncome(incomeToRemove) {
-    const removedIncome = await removeIncome(repo, {
-      id: incomeToRemove.id,
-      description: incomeToRemove.data[0],
-      incomeType: incomeToRemove.data[1],
-      date: formatBrDateToISO(incomeToRemove.data[2]),
-      value: formatCurrencyToInt(incomeToRemove.data[3])
-    });
+  async function onRemoveIncome(incomeTableData) {
+    const incomeToRemove = {
+      id: incomeTableData.id,
+      description: incomeTableData.data[0],
+      incomeType: incomeTableData.data[1],
+      date: formatBrDateToISO(incomeTableData.data[2]),
+      value: formatCurrencyToInt(incomeTableData.data[3])
+    };
 
-    const parsedMonth = parseISODate(removedIncome.date).month - 1;
-    const currentMonthIncomeValue = yearIncomesValue.value[parsedMonth];
+    const removedIncome = await removeIncome(repo, incomeToRemove);
+    const month = parseISODate(date.value).month;
 
-    yearIncomesValue.value[parsedMonth] = currentMonthIncomeValue - removedIncome.value;
-    // Update chart
-    chartEl.value.updateChartData(yearIncomesValue.value.map(value => value / 100));
-    // Update last12MonthsValues
-    last12MonthsValues.value = await getLast12MonthsValues(repo, dateStore.toCurrentISOString());
     monthIncomes.value = monthIncomes.value.filter(tb => tb.id !== removedIncome.id);
+    yearIncomesValue.value[month - 1] -= removedIncome.value;
+
+    last12MonthsValues.value = await getLast12MonthsValues(repo, date.value);
   }
 
   onMounted(() => {
-    getIncomesValueByYear(repo, parseISODate(date.value).year).then(
-      (incomesValue) => {
+    getIncomesValueByYear(repo, parseISODate(date.value).year).then(incomesValue => {
         yearIncomesValue.value = incomesValue;
-        chartEl.value.setChartData(incomesValue.map(value => value / 100));
-      }
-    );
+    });
     getIncomesByMonth(repo, date.value.substring(0,7)).then(incomes => {
       monthIncomes.value = incomes;
     });
@@ -200,8 +146,9 @@
     <section>
       <TrasactionYearSummaryChart
         ref="chartEl"
+        :year="parseISODate(date).year.toString()"
         category="Historico de Entradas no ano"
-        :title="parseISODate(date).year.toString()"
+        label="Entradas"
         :chart-bg-color="colors.success"
       ></TrasactionYearSummaryChart>
     </section>
