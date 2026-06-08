@@ -18,16 +18,26 @@
     CategoryScale,
     LinearScale
   );
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
 
   let chart = null;
   const chartEl = shallowRef(null);
   const props = defineProps({
-    /**
-     * @type [number[]]
-     */
-    data: {type: Array, default: []},
     year: {}
   });
+
+  function setChartData(data) {
+    chart.data.datasets[0].data = data;
+
+    chart.update();
+  }
+  function updateChartData(data) {
+    chart.data.datasets[0].data = data;
+
+    chart.update();
+  }
+
+  defineExpose({setChartData, updateChartData});
 
   onMounted(() => {
     chart = new Chart(chartEl.value, {
@@ -36,27 +46,26 @@
         labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
         datasets: [{
           label: "Despesa",
-          data: props.data[0],
+          data: [],
           backgroundColor: colors.danger
-        }, {
-          label: "Fatura",
-          data: props.data[1],
-          backgroundColor: colors.purple
-        }, {
-          label: "Despesa Total",
-          data: props.data[2],
-          backgroundColor: colors.info
-        }]
+        }],
+      },
+      options: {
+        scales: {
+          y: {
+            ticks: {
+              callback: value => `${formatIntToCurrency(value)}`,
+              stepSize: props.stepSize
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {label: ctx => `R$ ${formatIntToCurrency(ctx.parsed.y)}`}
+          }
+        }
       }
     });
-  });
-
-  watch(() => props.data, () => {
-    chart.data.datasets.map((row, index) => {
-      row.data = props.data[index];
-    });
-
-    chart.update();
   });
 </script>
 

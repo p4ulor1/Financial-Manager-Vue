@@ -37,7 +37,7 @@
     }
 
     const day = parseISODate(date.value).day;
-    dateStore.setDate(`${yearSelectEl.value.value}-${monthSelectEl.value.value}-${day}`);
+    dateStore.setDate(`${yearSelectEl.value.value}-${monthSelectEl.value.value}-${day < 10 ? `0${day}`: day}`);
 
     hide();
   }

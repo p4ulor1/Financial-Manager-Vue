@@ -2,7 +2,7 @@
   import InfoCard from '@/components/InfoCard.vue';
   import CreditCardCarousel from '@/components/CreditCardCarousel.vue';
   import FloatBtn from '@/components/FloatBtn.vue';
-  import SelectDateModal from '@/components/SelectDateModal.vue';
+  import SelectDateModal from '@/components/modals/SelectDateModal.vue';
   import YearSummaryChart from "@/components/YearSummaryChart.vue";
   import MonthSummaryChart from "@/components/MonthSummaryChart.vue";
   import { ref, shallowRef, computed } from 'vue';

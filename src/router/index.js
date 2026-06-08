@@ -4,7 +4,7 @@ import Orcamentos  from '@/views/Orcamentos.vue';
 import Dashboard   from '@/views/Dashboard.vue';
 import Income      from '@/views/Income.vue';
 import Aporte      from '@/views/Aporte.vue';
-import Despesas    from '@/views/Despesas.vue';
+import Expense     from '@/views/Expense.vue';
 import Cartao      from '@/views/Cartao.vue';
 import Calculadora from '@/views/Calculadora.vue';
 
@@ -39,7 +39,7 @@ const router = createRouter({
         {
           path: '/expense',
           name: 'expense',
-          component: Despesas
+          component: Expense
         },
         {
           path: '/creditCard',

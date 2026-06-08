@@ -3,7 +3,7 @@
   import WaveCard from "@/components/WaveCard.vue";
   import FloatBtn from "@/components/FloatBtn.vue";
   import { useRouter } from "vue-router";
-  import { formatIsoToBrDate } from '@/vueUtils/formatIsoToBrDate';
+  import { formatISOToBrDate } from '@/vueUtils/dateUtils';
 
   const router = useRouter();
   // variaveis de front end dependentes do dominio
@@ -36,7 +36,7 @@
       <div class="card-row">
         <p class="card-text">
           <i class="bi bi-calendar3"></i>
-          {{ formatIsoToBrDate(budget.creationDate) }}
+          {{ formatISOToBrDate(budget.creationDate) }}
         </p>
       </div>
       <div class="card-row">

@@ -13,7 +13,7 @@
   const modalEl = ref(null);
   const descriptionEl = ref(null);
   const nullDescriptionMsgEl = ref(null);
-  const incomeTypeEl = ref(null);
+  const expenseTypeEl = ref(null);
   const nullTypeMsgEl = ref(null);
   const dateEl = ref(null);
   const nullDateMsgEl = ref(null);
@@ -23,23 +23,23 @@
   /*
    * Emits
    *
-   * @typedef {Object} Income
+   * @typedef {Object} Expense
    * @property {string} description
-   * @property {string} incomeType
+   * @property {string} expenseType
    * @property {string} date - Br Format
    * @property {string} value - Currency Format
    *
-   * @typedef {function} createIncomeSubmit
+   * @typedef {function} createExpenseSubmit
    * @returns {Income}
   */
-  const emit = defineEmits(['createIncomeSubmit']);
+  const emit = defineEmits(['createExpenseSubmit']);
 
   function show() {
     // Description
     descriptionEl.value.value = '';
     nullDescriptionMsgEl.value.classList.add('d-none');
     // Type
-    incomeTypeEl.value.value = '';
+    expenseTypeEl.value.value = '';
     nullTypeMsgEl.value.classList.add('d-none');
     // Date
     dateEl.value.value = formatISOToBrDate(dateStore.toISOString());
@@ -57,9 +57,9 @@
   function submit() {
     if (!isValidForm()) return;
 
-    emit('createIncomeSubmit', {
+    emit('createExpenseSubmit', {
       description: descriptionEl.value.value,
-      incomeType: incomeTypeEl.value.value,
+      expenseType: expenseTypeEl.value.value,
       date: dateEl.value.value,
       value: valueEl.value.value
     });
@@ -78,7 +78,7 @@
       nullDescriptionMsgEl.value.classList.add('d-none');
     }
     // Type validation
-    if (incomeTypeEl.value.value.length === 0) {
+    if (expenseTypeEl.value.value.length === 0) {
       nullTypeMsgEl.value.classList.remove('d-none');
       isValid = false;
     }
@@ -146,12 +146,24 @@
     </div>
     <!-- TIPO DE ENTRADA -->
     <div class="mb-3">
-      <label class="form-label">Selecione o Tipo</label>
-      <select  ref="incomeTypeEl" class="form-select">
-        <option value="" selected>Tipo de entrada</option>
-        <option value="Renda Trabalho">Renda Trabalho</option>
-        <option value="Renda Extra">Renda Extra</option>
-        <option value="Resgate Investimento">Resgate Investimento</option>
+      <label class="form-label">Selecione a Categoria</label>
+      <select  ref="expenseTypeEl" class="form-select">
+        <option value="" selected>Categoria</option>
+        <option value="Assinatura">Assinatura</option>
+        <option value="Alimentação">Alimentação</option>
+        <option value="Comunicação">Comunicação</option>
+        <option value="Entretenimento">Entretenimento</option>
+        <option value="Impostos">Impostos</option>
+        <option value="Mercado">Mercado</option>
+        <option value="Moradia">Moradia</option>
+        <option value="Passeio">Passeio</option>
+        <option value="Pets">Pets</option>
+        <option value="Presentes">Presentes</option>
+        <option value="Saúde">Saúde</option>
+        <option value="Transporte">Transporte</option>
+        <option value="Viagem">Viagem</option>
+        <option value="Vestuário">Vestuário</option>
+        <option value="Outros">Outros</option>
       </select>
       <div ref="nullTypeMsgEl" class="form-text text-danger d-none">Campo Obrigatório</div>
     </div>
