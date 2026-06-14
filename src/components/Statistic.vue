@@ -4,7 +4,7 @@
   const props = defineProps({
     category:  {type: String},
     title:     {type: String},
-    statisticsData:  {type: Array}
+    statisticsData:  {type: Array} // @type {Array|Null}
   });
 
   const labels = ['Média do Ano', 'Média nos 12 meses', 'Total no Ano']
@@ -21,8 +21,8 @@
         <template v-for="(index) in labels.length">
           <p>
             {{ labels[index - 1] }}:
-            <div v-if="!props.statisticsData[index - 1]" class="spinner-border spinner-border-sm" role="status"></div>
-            <span v-else>{{ formatIntToCurrency(props.statisticsData[index - 1] * 100) }}</span>
+            <div v-if="!props.statisticsData" class="spinner-border spinner-border-sm" role="status"></div>
+            <span v-else>{{ props.statisticsData[index - 1] }}</span>
           </p>
 
           <div v-if="index < (labels.length)" class="hr"></div>

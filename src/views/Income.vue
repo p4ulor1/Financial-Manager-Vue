@@ -136,9 +136,9 @@
     <section>
       <InfoCard
         :icon-color="0"
-        :info="monthIncome"
-        category="Entrada"
-        sub-info="Total de entrada no mês"
+        :info="[monthIncome]"
+        :category="['Entrada']"
+        :sub-info="['Total de entrada no mês']"
       ></InfoCard>
     </section>
 

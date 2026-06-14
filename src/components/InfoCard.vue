@@ -3,9 +3,10 @@
 
   const props = defineProps({
     iconColor: {type: Number, default: 0},
-    category:  {type: String, default: "Card Category"},
-    subInfo:   {type: String, default: "Card Sub-Info"},
-    info:      {type: String}, // type: String|null
+    category:  {type: Array, default: ["Card Category"]},
+    subInfo:   {type: Array, default: ["Card Sub-Info"]}, // Must have same length of category
+    info:      {}, // @type: Array<String>|Array<Null>; Must have same length of category
+    icon:      {}
   });
   const iconColorMap = [
     'bg-gradient-success',
@@ -21,18 +22,21 @@
   <div class="card">
     <div class="card-body">
       <div class="row">
-        <div class="col-4">
+        <div class="col-4 align-content-center">
           <div :class="['icon', iconColorMap[iconColorIndex]]">
             <slot>
-              <i class="bi bi-plus-lg"></i>
+              <i v-if="!props.icon" class="bi bi-plus-lg"></i>
+              <i v-else class="bi" :class="props.icon"></i>
             </slot>
           </div>
         </div>
         <div class="col-8">
-          <p class="card-category text-end">{{ props.category }}</p>
-          <h5 v-if="props.info != null" class="card-title text-end">R$ {{ props.info }}</h5>
-          <div v-else class="spinner-wrapper">
-            <div class="spinner-border" role="status"></div>
+          <div v-for="(category, index) in props.category" class="mb-1">
+            <p class="card-category text-end">{{ category }}</p>
+            <h5 v-if="props.info[index] !== null" class="card-title text-end">R$ {{ props.info[index] }}</h5>
+            <div v-else class="spinner-wrapper">
+              <div class="spinner-border" role="status"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -40,7 +44,7 @@
 
     <div class="card-footer">
       <hr>
-      <p class="card-category">{{ props.subInfo }}</p>
+      <p v-for="(category, index) in props.category" class="card-category">{{ props.subInfo[index] }}</p>
     </div>
   </div>
 </template>

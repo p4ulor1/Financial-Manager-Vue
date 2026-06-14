@@ -10,10 +10,11 @@
      *
      * @type {Array<TableData>}
      */
-    tableData: {type: Object}
+    tableData: {type: Object},
+    isContribution: {default: false}
   });
 
-  defineEmits(['deleteRow']);
+  defineEmits(['deleteRow', 'redeemContribution']);
 </script>
 
 <template>
@@ -31,6 +32,8 @@
               <p v-else-if="index === props.headers.length - 1" class="text-end m-0">{{ header }}</p>
               <p v-else class="text-center m-0">{{ header }}</p>
             </th>
+            <th><p class="text-center m-0">Apagar</p></th>
+            <th v-if="props.isContribution"><p class="text-center m-0">Resgatar</p></th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -40,7 +43,19 @@
               <p v-else-if="dataIndex === props.headers.length - 1" class="text-end m-0">{{ value }}</p>
               <p v-else class="text-center m-0">{{ value }}</p>
             </td>
-            <td @click="$emit('deleteRow', props.tableData[rowIndex])"><i class="bi bi-trash3-fill"></i></td>
+            <td @click="$emit('deleteRow', props.tableData[rowIndex])">
+              <div class="d-flex justify-content-center">
+                <i class="bi bi-trash3-fill"></i>
+              </div>
+            </td>
+            <td
+              v-if="props.isContribution"
+              @click="$emit('redeemContribution', props.tableData[rowIndex])"
+            >
+              <div class="d-flex justify-content-center">
+                <i class="bi bi-cash-coin"></i>
+              </div>
+            </td>
           </tr>
           <tr v-else>
             <td v-for="column in props.headers">
@@ -58,8 +73,12 @@
 <style lang="scss" scoped>
   @use "@/assets/scss/bs-variables";
 
-  i {
+  .bi-trash3-fill {
     color: var(--red);
+  }
+
+  .bi-cash-coin {
+    color: var(--green);
   }
 
   td, th {

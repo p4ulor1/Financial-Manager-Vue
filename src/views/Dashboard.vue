@@ -36,28 +36,28 @@
     <!-- MONTH SUMMARY SECTION -->
     <section>
       <InfoCard
-        category="Entrada"
-        sub-info="Total de entrada no mês"
+        :category="['Entrada']"
+        :sub-info="['Total de entrada no mês']"
         :icon-color="0"
-        :info="monthSummary ? float2string(monthSummary.income) : null"
+        :info="[monthSummary ? float2string(monthSummary.income) : null]"
       ></InfoCard>
       <InfoCard
-        category="Despesas"
-        sub-info="Total de despesas no mês"
+        :category="['Despesas']"
+        :sub-info="['Total de despesas no mês']"
         :icon-color="4"
-        :info="monthSummary ? float2string(monthSummary.expense) : null"
+        :info="[monthSummary ? float2string(monthSummary.expense) : null]"
       ></InfoCard>
       <InfoCard
-        category="Aporte"
-        sub-info="Total de aportes no mês"
+        :category="['Aporte']"
+        :sub-info="['Total de aportes no mês']"
         :icon-color="3"
-        :info="monthSummary ? float2string(monthSummary.contribution) : null"
+        :info="[monthSummary ? float2string(monthSummary.contribution) : null]"
       ></InfoCard>
       <InfoCard
-        category="Resultado"
-        sub-info="Resultado total no mês"
+        :category="['Resultado']"
+        :sub-info="['Resultado total no mês']"
         :icon-color="2"
-        :info="monthSummary ? float2string(monthSummary.result) : null"
+        :info="[monthSummary ? float2string(monthSummary.result) : null]"
       ></InfoCard>
     </section>
 

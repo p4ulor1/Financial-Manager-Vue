@@ -135,10 +135,10 @@
   <div class="container">
     <section>
       <InfoCard
-        category="Despesa"
-        sub-info="Total de despesas no mês"
+        :category="['Despesa']"
+        :sub-info="['Total de despesas no mês']"
         :icon-color="4"
-        :info="monthExpense"
+        :info="[monthExpense]"
       ></InfoCard>
     </section>
 

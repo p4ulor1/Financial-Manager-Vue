@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Layout1     from '@/layout/Layout-1.vue';
-import Orcamentos  from '@/views/Orcamentos.vue';
-import Dashboard   from '@/views/Dashboard.vue';
-import Income      from '@/views/Income.vue';
-import Aporte      from '@/views/Aporte.vue';
-import Expense     from '@/views/Expense.vue';
-import Cartao      from '@/views/Cartao.vue';
-import Calculadora from '@/views/Calculadora.vue';
+import Layout1      from '@/layout/Layout-1.vue';
+import Orcamentos   from '@/views/Orcamentos.vue';
+import Dashboard    from '@/views/Dashboard.vue';
+import Income       from '@/views/Income.vue';
+import Contribution from '@/views/Contribution.vue';
+import Expense      from '@/views/Expense.vue';
+import Cartao       from '@/views/Cartao.vue';
+import Calculadora  from '@/views/Calculadora.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,7 @@ const router = createRouter({
         {
           path: '/contribution',
           name: 'contribution',
-          component: Aporte
+          component: Contribution
         },
         {
           path: '/expense',
