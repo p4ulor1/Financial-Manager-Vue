@@ -6,7 +6,7 @@
   const props = defineProps({
     title:           {type: String},
     category:        {type: String},
-    creditCardsInfo: {type: Array, required: true}, // type: [CreditCardInfo]
+    creditCardsInfo: {type: Array, required: true}, // @type: Array<CreditCardInfo>
     ride:            {type: Boolean, default: false}
   });
   const emit = defineEmits(['carousel-slide']);
@@ -65,6 +65,10 @@
 
 <style lang="scss" scoped>
 @use "@/assets/scss/bs-variables";
+
+  button {
+    z-index: 3;
+  }
 
   .carousel-item {
     padding: 0 map-get($map: bs-variables.$spacers, $key: 1);

@@ -1,10 +1,28 @@
 <script setup>
-  import WaveCard from './WaveCard.vue';
+  import WaveCard from '@/components/WaveCard.vue';
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
 
   const props = defineProps({
     bgIndex: {type: Number, default: 0},
-    creditCardInfo:  {type: Object, required: true} // @type: {last4CardNumbers: string, owner: string, operator: string, invoice: number|null, closeDate: string, dueDate: string}
+    /**
+     * @typedef {Object} CreditCardInfo
+     * @property {String} last4CardNumbers
+     * @property {String} owner
+     * @property {String} operator
+     * @property {Number} simulatedInvoice - Integer type
+     * @property {Number} effectiveInvoice - Integer type
+     * @property {Number} closeDate - Integer type
+     * @property {Number} dueDate - Integer type
+     *
+     * @type CreditCardInfo
+     */
+    creditCardInfo:  {type: Object, required: true}
   });
+
+  // METHODS
+  function intToString(int) {
+    return int < 10 ? `0${int}` : `${int}`;
+  }
 </script>
 
 <template>
@@ -36,25 +54,30 @@
       </div>
     </div>
 
+    <div class="row mb-1">
+      <div class="col">
+        <p>Fatura Simulada:</p>
+        <h6>R$ {{ formatIntToCurrency(props.creditCardInfo.simulatedInvoice) }}</h6>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col">
         <div>
-          <template v-if="props.creditCardInfo.invoice">
-            <p>Total:</p>
-            <h6>{{ props.creditCardInfo.invoice }}</h6>
-          </template>
+          <p>Fatura Efetiva:</p>
+          <h6>R$ {{ formatIntToCurrency(props.creditCardInfo.effectiveInvoice) }}</h6>
         </div>
       </div>
       <div class="col">
         <div class="card-info">
           <div>
             <p>Fech</p>
-            <h6>{{ props.creditCardInfo.closeDate }}</h6>
+            <h6>{{ intToString(props.creditCardInfo.closeDate) }}</h6>
           </div>
 
           <div>
             <p>Venc</p>
-            <h6>{{ props.creditCardInfo.dueDate }}</h6>
+            <h6>{{ intToString(props.creditCardInfo.dueDate) }}</h6>
           </div>
         </div>
       </div>
