@@ -109,7 +109,7 @@
         </li>
         <li ref="income">
           <a class="menu-item" @click="changeRoute(routerManager.goToIncome)">
-            <i class="bi bi-cash-stack menu-icon"></i>
+            <i class="bi bi-cash-coin menu-icon"></i>
             <span class="menu-label">Entrada</span>
           </a>
         </li>

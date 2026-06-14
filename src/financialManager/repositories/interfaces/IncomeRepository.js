@@ -43,9 +43,9 @@ export default class IncomeRepository {
   async getIncomesValueByYear(year) {}
   /*
    * @param {string} currentDate - YYYY-MM-DD
-   * @returns {Promise<array<number>>} - array of integers
+   * @returns {Promise<number>} - The amount in integer type
    */
-  async getLast12MonthsValues(currentDate) {}
+  async getLast12MonthsAmount(currentDate) {}
   /*
    * @typedef {Object} Income
    * @property {string} id

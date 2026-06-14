@@ -9,12 +9,13 @@
   import { colors } from '@/assets/js/utils/colors';
   import { formatBrDateToISO, parseISODate, parseBrDate, formatISOToBrDate } from '@/vueUtils/dateUtils';
   import { formatIntToCurrency, formatCurrencyToInt } from '@/vueUtils/currencyUtils';
+  import statisticsBuilder from "@/vueUtils/statisticsBuilder";
   // Domain dependecies
   import { dateStore } from '@/stores/dateStore';
-  import MockIncomeRepository from '@/financialManager/repositories/MockIncomeRepository.js';
-  import getIncomesValueByYear from '@/financialManager/useCases/income/getIncomesValueByYear.js';
-  import getIncomesByMonth from '@/financialManager/useCases/income/getIncomesByMonth.js';
-  import getLast12MonthsValues from '@/financialManager/useCases/income/getLast12MonthsValues.js';
+  import MockIncomeRepository from '@/financialManager/repositories/MockIncomeRepository';
+  import getIncomesValueByYear from '@/financialManager/useCases/income/getIncomesValueByYear';
+  import getIncomesByMonth from '@/financialManager/useCases/income/getIncomesByMonth';
+  import getLast12MonthsAmount from '@/financialManager/useCases/getLast12MonthsAmount';
   import addIncome from '@/financialManager/useCases/income/addIncome';
   import removeIncome from '@/financialManager/useCases/income/removeIncome';
 
@@ -23,7 +24,7 @@
   // variaveis de Dominio
   const yearIncomesValue = ref(null);
   const monthIncomes = ref(null);
-  const last12MonthsValues = ref(null);
+  const last12MonthsAmount = ref(null);
   // dom
   const modalEl = ref(null);
   const chartEl = ref(null);
@@ -50,19 +51,9 @@
     return formatIntToCurrency(yearIncomesValue.value[month - 1]);
   });
   const statisticsData = computed(() => {
-    if (last12MonthsValues.value === null) return [];
+    if (last12MonthsAmount.value === null) return [];
 
-    const last12MonthsAverage = last12MonthsValues.value.reduce((accumulator, currentValue, currentIndex) => {
-      if (currentIndex === 11) return (accumulator + currentValue) / 12;
-
-      return accumulator + currentValue;
-    }, 0);
-    const yearAmount = yearIncomesValue.value.reduce((accumulator, currentValue, currentIndex) => {
-      return accumulator + currentValue;
-    }, 0);
-    const yearAverage = yearAmount/12;
-
-    return [yearAverage / 100, last12MonthsAverage / 100, yearAmount / 100];
+    return statisticsBuilder(last12MonthsAmount.value, yearIncomesValue.value);
   });
 
   watch(yearIncomesValue, (newIncomesValue) => {
@@ -89,7 +80,7 @@
     normalizedIncome.value = formatCurrencyToInt(income.value);
 
     const addedIncome = await addIncome(repo, normalizedIncome);
-    const month = parseISODate(date.value).month;
+    const month = parseISODate(addedIncome.date).month;
 
     monthIncomes.value.push(addedIncome);
     yearIncomesValue.value[month - 1] += addedIncome.value;
@@ -97,7 +88,7 @@
     const parsedMonth = parseISODate(addedIncome.date).month - 1;
     const currentMonthIncomeValue = yearIncomesValue.value[parsedMonth];
 
-    last12MonthsValues.value = await getLast12MonthsValues(repo, date.value);
+    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
   };
   async function onRemoveIncome(incomeTableData) {
     const incomeToRemove = {
@@ -109,12 +100,12 @@
     };
 
     const removedIncome = await removeIncome(repo, incomeToRemove);
-    const month = parseISODate(date.value).month;
+    const month = parseISODate(removedIncome.date).month;
 
     monthIncomes.value = monthIncomes.value.filter(tb => tb.id !== removedIncome.id);
     yearIncomesValue.value[month - 1] -= removedIncome.value;
 
-    last12MonthsValues.value = await getLast12MonthsValues(repo, date.value);
+    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
   }
 
   onMounted(() => {
@@ -124,8 +115,8 @@
     getIncomesByMonth(repo, date.value.substring(0,7)).then(incomes => {
       monthIncomes.value = incomes;
     });
-    getLast12MonthsValues(repo, dateStore.toCurrentISOString()).then((incomes) => {
-      last12MonthsValues.value = incomes;
+    getLast12MonthsAmount(repo, dateStore.toCurrentISOString()).then((incomes) => {
+      last12MonthsAmount.value = incomes;
     });
   });
 </script>

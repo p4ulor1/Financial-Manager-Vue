@@ -21,10 +21,10 @@ export default class ExpenseRepository {
    */
   getExpensesByMonth(monthDate) {}
   /*
-   * @param {string} date - YYYY-MM
-   * @returns {Promise<array<number>>} - array of integers
+   * @param {string} currentDate - YYYY-MM-DD
+   * @returns {Promise<number>} - The integer type amount
    */
-   getLast12MonthsValues(date) {}
+   getLast12MonthsAmount(date) {}
    /*
     * @typedef {Object} Expense
     * @property {string} id

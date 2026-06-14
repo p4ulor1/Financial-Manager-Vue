@@ -13,13 +13,13 @@
   import { ref, onMounted, computed, watch } from 'vue';
   // Domain
   import MockContributionRepository from "@/financialManager/repositories/MockContributionRepository";
-  import { getContributionsValueByYear } from "@/financialManager/useCases/contribution/getContributionsValueByYear";
-  import { getContributionsByMonth } from "@/financialManager/useCases/contribution/getContributionsByMonth";
-  import { getLast12MonthsAmount } from "@/financialManager/useCases/contribution/getLast12MonthsAmount";
-  import { getTotalContributions } from "@/financialManager/useCases/contribution/getTotalContributions";
-  import { addContribution } from "@/financialManager/useCases/contribution/addContribution";
-  import { removeContribution } from "@/financialManager/useCases/contribution/removeContribution";
-  import { redeemContribution } from "@/financialManager/useCases/contribution/redeemContribution";
+  import getContributionsValueByYear from "@/financialManager/useCases/contribution/getContributionsValueByYear";
+  import getContributionsByMonth from "@/financialManager/useCases/contribution/getContributionsByMonth";
+  import getLast12MonthsAmount from "@/financialManager/useCases/getLast12MonthsAmount";
+  import getTotalContributions from "@/financialManager/useCases/contribution/getTotalContributions";
+  import addContribution from "@/financialManager/useCases/contribution/addContribution";
+  import removeContribution from "@/financialManager/useCases/contribution/removeContribution";
+  import redeemContribution from "@/financialManager/useCases/contribution/redeemContribution";
 
   const repo = new MockContributionRepository();
   const date = computed(() => dateStore._ISODate);
@@ -57,7 +57,7 @@
     return formatIntToCurrency(totalContribution.value);
   })
   const statisticsData = computed(() => {
-    if (last12MonthsAmount.value === null && yearContributionsValue.value === null) return null ;
+    if (last12MonthsAmount.value === null) return null;
 
     return statisticsBuilder(last12MonthsAmount.value, yearContributionsValue.value);
   });

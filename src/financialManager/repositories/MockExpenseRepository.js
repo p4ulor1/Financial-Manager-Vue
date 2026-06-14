@@ -25,10 +25,10 @@ export default class MockExpenseRepository extends ExpenseRepository {
       }, PROMISE_RESOLVE_TIME);
     });
   }
-  getLast12MonthsValues(date) {
+  getLast12MonthsAmount(date) {
     return new Promise((res, rej) => {
       setTimeout(() => {
-        res([0, 0, 0, 0, 0, 0, 524957, 524957, 524957, 524957, 524957, 524957]);
+        res([0, 0, 0, 0, 0, 0, 524957, 524957, 524957, 524957, 524957, 524957].reduce((acc, crr) => acc + crr,0));
       }, PROMISE_RESOLVE_TIME);
     });
   }

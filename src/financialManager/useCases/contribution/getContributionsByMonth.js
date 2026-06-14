@@ -1,3 +1,3 @@
-export async function getContributionsByMonth(repo, date) {
+export default async function getContributionsByMonth(repo, date) {
   return await repo.getContributionsByMonth(date);
 }

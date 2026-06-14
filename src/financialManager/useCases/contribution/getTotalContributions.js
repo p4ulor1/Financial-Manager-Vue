@@ -1,3 +1,3 @@
-export async function getTotalContributions(repo) {
+export default async function getTotalContributions(repo) {
   return await repo.getTotalContributions();
 }

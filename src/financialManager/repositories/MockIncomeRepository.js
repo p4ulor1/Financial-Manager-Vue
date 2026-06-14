@@ -45,12 +45,12 @@ export default class MockIncomeRepository extends IncomeRepository {
       }, PROMISE_RESOLVE_TIME);
     });
   };
-  getLast12MonthsValues(currentDate) {
+  getLast12MonthsAmount(currentDate) {
     this._validateDate(currentDate);
 
     return new Promise((res, rej) => {
       setTimeout(() => {
-        res([0, 0, 0, 0, 0, 0, 524957, 524957, 524957, 524957, 524957, 524957]);
+        res([0, 0, 0, 0, 0, 0, 524957, 524957, 524957, 524957, 524957, 524957].reduce((acc, crr) => acc + crr,0));
       }, PROMISE_RESOLVE_TIME);
     });
   }
