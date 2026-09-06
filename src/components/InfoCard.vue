@@ -33,10 +33,10 @@
         <div class="col-8">
           <div v-for="(category, index) in props.category" class="mb-1">
             <p class="card-category text-end">{{ category }}</p>
-            <h5 v-if="props.info[index] !== null" class="card-title text-end">R$ {{ props.info[index] }}</h5>
-            <div v-else class="spinner-wrapper">
+            <div v-if="props.info[index] === null" class="spinner-wrapper">
               <div class="spinner-border" role="status"></div>
             </div>
+            <h5 v-else class="card-title text-end">R$ {{ props.info[index] }}</h5>
           </div>
         </div>
       </div>

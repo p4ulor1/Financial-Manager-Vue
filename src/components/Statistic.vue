@@ -3,18 +3,18 @@
 
   const props = defineProps({
     category:  {type: String},
-    title:     {type: String},
+    title:     {type: String, default: "Estatísticas"},
     statisticsData:  {type: Array} // @type {Array|Null}
   });
 
-  const labels = ['Média do Ano', 'Média nos 12 meses', 'Total no Ano']
+  const labels = ['Média do Ano', 'Total no Ano']
 </script>
 
 <template>
   <div class="card">
     <div class="card-header">
       <p class="card-category">{{ props.category }}</p>
-      <h2 class="card-title">Estatistica</h2>
+      <h2 class="card-title">{{ props.title }}</h2>
     </div>
     <div class="card-body">
       <div class="statistic">

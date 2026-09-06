@@ -12,9 +12,12 @@
  */
 function formatCurrency(value) {
   let currency = value.replace(/\D/g, '');
+  if (currency.length === 0) return '';
+
   currency = (Number.parseInt(currency) / 100).toFixed(2) + '';
   currency = currency.replace('.', ',');
   currency = currency.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+
   return currency;
 }
 /*

@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Layout1      from '@/layout/Layout-1.vue';
-import Orcamentos   from '@/views/Orcamentos.vue';
+import Budget       from '@/views/Budget.vue';
 import Dashboard    from '@/views/Dashboard.vue';
 import Income       from '@/views/Income.vue';
 import Contribution from '@/views/Contribution.vue';
 import Expense      from '@/views/Expense.vue';
-import Cartao       from '@/views/Cartao.vue';
+import CreditCard   from '@/views/CreditCard.vue';
 import Calculadora  from '@/views/Calculadora.vue';
 
 const router = createRouter({
@@ -19,7 +19,7 @@ const router = createRouter({
         {
           path: '/',
           name: 'budget',
-          component: Orcamentos
+          component: Budget
         },
         {
           path: '/dashboard',
@@ -44,7 +44,7 @@ const router = createRouter({
         {
           path: '/creditCard',
           name: 'creditCard',
-          component: Cartao
+          component: CreditCard
         },
         {
           path: '/calculator',

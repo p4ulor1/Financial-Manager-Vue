@@ -1,11 +1,12 @@
 <script setup>
   import ModalTemplate from '@/components/modals/ModalTemplate.vue';
   import { ref, onMounted } from 'vue';
-  import { formatCurrency } from '@/vueUtils/currencyUtils';
+  import { formatCurrency, formatCurrencyToInt } from '@/vueUtils/currencyUtils';
   import {
     formatBrDate,
     isValidBrDate,
-    formatISOToBrDate
+    formatISOToBrDate,
+    formatBrDateToISO
   } from '@/vueUtils/dateUtils';
   import { dateStore } from "@/stores/dateStore";
 
@@ -54,18 +55,6 @@
   function hide() {
     modalEl.value.hide();
   }
-  function submit() {
-    if (!isValidForm()) return;
-
-    emit('createExpenseSubmit', {
-      description: descriptionEl.value.value,
-      expenseType: expenseTypeEl.value.value,
-      date: dateEl.value.value,
-      value: valueEl.value.value
-    });
-
-    hide();
-  }
   function isValidForm() {
     let isValid = true;
 
@@ -109,7 +98,19 @@
       nullValueMsgEl.value.classList.add('d-none');
     }
 
-    return isValid ? true : false;
+    return isValid;
+  }
+  function submit() {
+    if (!isValidForm()) return;
+
+    emit('createExpenseSubmit', {
+      description: descriptionEl.value.value,
+      expenseType: expenseTypeEl.value.value,
+      date: formatBrDateToISO(dateEl.value.value),
+      value: formatCurrencyToInt(valueEl.value.value)
+    });
+
+    hide();
   }
 
   // EXPOSE METHODS
@@ -132,7 +133,7 @@
 <template>
   <ModalTemplate
     ref="modalEl"
-    title="Adicionar Entrada"
+    title="Adicionar Despesa"
     @modal-cancel="hide"
     @modal-confirm="submit"
   >

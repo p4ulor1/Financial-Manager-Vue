@@ -29,7 +29,7 @@
       align-items: center;
       border-radius: 100vw;
       z-index: 1000;
-      @include bs-configuration.gradient-directional(var(--polar-night0), var(--polar-night3), 135deg);
+      @include bs-configuration.gradient-directional(var(--dark), var(--polar-night3), 135deg);
       box-shadow: bs-configuration.$box-shadow;
 
       i {

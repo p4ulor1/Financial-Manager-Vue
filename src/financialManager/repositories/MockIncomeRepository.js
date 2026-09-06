@@ -1,16 +1,59 @@
 import IncomeRepository from "@/financialManager/repositories/interfaces/IncomeRepository.js";
-import { isValidISODate } from "@/vueUtils/dateUtils";
+import { isValidISODate, parseISODate } from "@/vueUtils/dateUtils";
 import { areArraysEqual } from '@/vueUtils/areArraysEqual';
 
 const PROMISE_RESOLVE_TIME = 1000;
+const MIN_INCOME_VALUE = 250000;
+const MAX_INCOME_VALUE = 400000;
+const INCOMES_VALUES = (() => {
+  const incomesValues = [];
+
+  for (let i = 0; i < 12; i++) {
+    incomesValues.push(
+      Number.parseInt((Math.random() * (MAX_INCOME_VALUE - MIN_INCOME_VALUE) + MIN_INCOME_VALUE).toString())
+    );
+  }
+
+  return incomesValues;
+})();
 
 export default class MockIncomeRepository extends IncomeRepository {
   constructor() {
-    super(null)
+    super(null);
   }
 
-  createIncome(income) {
-    this._validateCreateIncome(income);
+  getIncomesValuesByYear(budgetID, year) {
+
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        res(INCOMES_VALUES);
+      }, PROMISE_RESOLVE_TIME);
+    });
+  };
+  getIncomesByMonth(budgetID, date) {
+    const ISODate = date + '-01';
+    const month = parseISODate(ISODate).month;
+    const numberOfIncomes = Number.parseInt((Math.random() * (4 - 1) + 1).toString());
+    const eachIncomeValue = Number.parseInt(Math.round(INCOMES_VALUES[month - 1] / numberOfIncomes).toString());
+    const incomes = [];
+
+    for (let i = 0; i < numberOfIncomes; i++) {
+      incomes.push({
+        id: `id_00${i}`,
+        description: `Entrada ${i}`,
+        incomeType: 'Renda Trabalho',
+        date: ISODate,
+        value: eachIncomeValue
+      });
+    }
+
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        res(incomes);
+      }, PROMISE_RESOLVE_TIME);
+    });
+  };
+  createIncome(budgetID, income) {
 
     return new Promise((res, rej) => {
       setTimeout(() => {
@@ -18,60 +61,21 @@ export default class MockIncomeRepository extends IncomeRepository {
       }, PROMISE_RESOLVE_TIME);
     });
   };
-  getIncomesByMonth(date) {
-    if (!isValidISODate(date + '-01'))
-      throw new Error('The date must be a string in format: YYYY-MM');
+  deleteIncome(budgetID, incomeToRemove) {
 
     return new Promise((res, rej) => {
       setTimeout(() => {
-        // res([]);
-        res([
-          {id: '1', description: "Despesa 1", incomeType: 'Renda Trabalho', date: '2026-05-05', value: 442822},
-          {id: '2', description: "Despesa 2", incomeType: 'Renda Extra', date: '2026-05-11', value: 45621},
-          {id: '3', description: "Despesa 3", incomeType: 'Renda Extra', date: '2026-05-21', value: 36514}
-        ]);
+        res(incomeToRemove);
       }, PROMISE_RESOLVE_TIME);
     });
   };
-  getIncomesValueByYear(year) {
-    if (!Number.isInteger(year))
-      throw new Error(`The year must be Integer type but '${typeof year}' type was passed`);
-    if (year < 1000 || year > 9999)
-      throw new Error(`An invalid year was passed. It must be an integer in a range of 1000 and 9999 but '${year}' was passed`);
+  getLast12MonthsAmount(budgetID, currentDate) {
+    const month = parseISODate(currentDate).month;
 
     return new Promise((res, rej) => {
       setTimeout(() => {
-        res([524957, 524957, 524957, 524957, 524957, 524957, 524957, 524957, 524957, 524957, 524957, 524957]);
-      }, PROMISE_RESOLVE_TIME);
-    });
-  };
-  getLast12MonthsAmount(currentDate) {
-    this._validateDate(currentDate);
-
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        res([0, 0, 0, 0, 0, 0, 524957, 524957, 524957, 524957, 524957, 524957].reduce((acc, crr) => acc + crr,0));
+        res(INCOMES_VALUES.slice(0, month).reduce((acc, crr) => acc + crr,0));
       }, PROMISE_RESOLVE_TIME);
     });
   }
-  deleteIncome(income) {
-    const expectedArr = ['id', 'description', 'incomeType', 'date', 'value'];
-    const receivedArr = Object.getOwnPropertyNames(income);
-
-    if (!areArraysEqual(
-      receivedArr,
-      expectedArr
-    )) {
-      throw new Error(`Invalid object properties passed. Expected: ${expectedArr}; Received: ${receivedArr}`);
-    };
-
-    if (typeof income.id !== 'string')
-      throw new Error(`The income ID must be String type but "${typeof incomeId}" was passed`);
-
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        res(income);
-      }, PROMISE_RESOLVE_TIME);
-    });
-  };
 };
