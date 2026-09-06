@@ -1,8 +1,6 @@
 <script setup>
   import { onMounted, watch, shallowRef } from 'vue';
   import { colors, bodyColor } from "@/assets/js/utils/colors";
-  import { float2string } from '@/vueUtils/float2string';
-  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
   import {
     Chart,
     BarController,
@@ -21,12 +19,23 @@
     CategoryScale,
     LinearScale
   );
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
 
   let chart = null;
   const chartEl = shallowRef(null);
   const props = defineProps({
-    year: {}
+    year: {},
+    category: {},
   });
+
+  function setChartData(data) {
+    chart.data.datasets[0].data = data[0];
+    chart.data.datasets[1].data = data[1];
+
+    chart.update();
+  }
+
+  defineExpose({setChartData});
 
   onMounted(() => {
     chart = new Chart(chartEl.value, {
@@ -35,30 +44,14 @@
       data: {
         labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
         datasets: [{
-          label: 'Entrada',
-          data: [],//props.data[0],
-          backgroundColor: colors.success
-        }, {
-          label: 'Despesa Simulada',
-          data: [],//props.data[1],
+          label: 'Faturas Simuladas',
+          data: [],
           backgroundColor: colors.danger
         }, {
-          label: 'Despesa Efetiva',
-          data: [],//props.data[2],
-          backgroundColor: colors.purple
-        }, {
-          label: 'Aporte',
-          data: [],//props.data[3],
+          label: 'Faturas Efetivas',
+          data: [],
           backgroundColor: colors.warning
-        }, {
-          label: 'Resultado Simulado',
-          data: [],//props.data[4],
-          backgroundColor: colors.info
-        }, {
-          label: 'Resultado Efetivo',
-          data: [],//props.data[5],
-          backgroundColor: colors.blue
-        }]
+        }],
       },
       options: {
         scales: {
@@ -75,35 +68,24 @@
           }
         },
         plugins: {
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                return `R$ ${formatIntToCurrency(ctx.parsed.y)}`;
-              }
+          legend: {
+            labels: {
+              color: bodyColor.dark
             }
           },
-          legend: {
-            labels: { color: bodyColor.dark },
-            position: 'top'
+          tooltip: {
+            callbacks: {label: ctx => `R$ ${formatIntToCurrency(ctx.parsed.y)}`}
           }
         }
       }
     });
-  });
-
-  watch(() => props.data, () => {
-    chart.data.datasets.map((row, index) => {
-      row.data = props.data[index];
-    })
-
-    chart.update();
   });
 </script>
 
 <template>
   <div class="card card-chart">
     <div class="card-header">
-      <p class="card-category">Resumo histórico do ano</p>
+      <p class="card-category">{{ props.category }}</p>
       <h2 class="card-title">{{ props.year }}</h2>
     </div>
     <div class="card-body">

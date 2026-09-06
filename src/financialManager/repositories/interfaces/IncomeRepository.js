@@ -6,7 +6,13 @@ export default class IncomeRepository {
     this._db = db;
   }
 
-  /*
+  /**
+   * @typedef {Object} CreateIncome
+   * @property {string} description
+   * @property {string} incomeType
+   * @property {string} date - YYYY-MM-DD
+   * @property {number} value - value multiplied by 100
+   *
    * @typedef {Object} Income
    * @property {string} id
    * @property {string} description
@@ -14,57 +20,54 @@ export default class IncomeRepository {
    * @property {string} date - YYYY-MM-DD
    * @property {number} value - value multiplied by 100
    *
-   * @typedef {Object} creator_Income
-   * @property {string} description
-   * @property {string} incomeType
-   * @property {string} date - YYYY-MM-DD
-   * @property {number} value - value multiplied by 100
-   *
-   * @param {creator_Income} income
+   * @param {String} budgetID
+   * @param {CreateIncome} income
    * @returns {Promise<Income>}
    */
-  async createIncome(income) {}
-  /*
+  createIncome(income) {}
+
+  /**
    * @typedef {Object} Income
-   * @property {string} id
-   * @property {string} description
-   * @property {string} incomeType
-   * @property {string} date - YYYY-MM-DD
-   * @property {number} value - The income values multiplied by 100
+   * @property {String} id
+   * @property {String} description
+   * @property {String} incomeType
+   * @property {String} date - YYYY-MM-DD
+   * @property {Number} value - The income values multiplied by 100
    *
-   * @param {string} date - YYYY-MM
+   * @param {String} budgetID
+   * @param {String} date - YYYY-MM-00
    * @returns {Promise<Array<Income>>}
    */
-  async getIncomesByMonth(date) {}
-  /*
-   * @param {number} year - Integer
-   * @returns {Promise<array<number>>} array of integers
+  getIncomesByMonth(budgetID, date) {}
+
+  /**
+   * @param {String} budgetID
+   * @param {String} year
+   * @returns {Promise<Number>} incomesValues
    */
-  async getIncomesValueByYear(year) {}
-  /*
-   * @param {string} currentDate - YYYY-MM-DD
+  getIncomesValuesByYear(budgetID, year) {}
+
+  /**
+   * @param {String} budgetID
+   * @param {String} currentDate - YYYY-MM-DD
    * @returns {Promise<number>} - The amount in integer type
    */
-  async getLast12MonthsAmount(currentDate) {}
-  /*
+  getLast12MonthsAmount(currentDate) {}
+
+  /**
    * @typedef {Object} Income
    * @property {string} id
    * @property {string} description
    * @property {string} incomeType
    * @property {string} date - YYYY-MM-DD
-   * @property {number} value - The income values multiplied by 100
+   * @property {number} value
    *
-   * @typedef {Object} IncomeID
-   * @property {string} id
-   * @property {any} description
-   * @property {any} incomeType
-   * @property {any} date
-   * @property {any} value
-   *
-   * @param {IncomeID} income
+   * @param {String} budgetID
+   * @param {Income} incomeToRemove
    * @returns {Promise<Income>}
+   * @throws {TypeError}
    */
-  async deleteIncome(income) {}
+  deleteIncome(budgetID, incomeToRemove) {}
 
   // VALIDATORS
   _validateIncome(income) {

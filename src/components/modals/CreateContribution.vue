@@ -1,10 +1,11 @@
 <script setup>
   import ModalTemplate from '@/components/modals/ModalTemplate.vue';
   import { ref, onMounted } from 'vue';
-  import { formatCurrency } from '@/vueUtils/currencyUtils';
+  import { formatCurrency, formatCurrencyToInt } from '@/vueUtils/currencyUtils';
   import {
     formatBrDate,
     isValidBrDate,
+    formatBrDateToISO,
     formatISOToBrDate
   } from '@/vueUtils/dateUtils';
   import { dateStore } from "@/stores/dateStore";
@@ -53,8 +54,8 @@
 
     emit('createContributionSubmit', {
       description: descriptionEl.value.value,
-      date: dateEl.value.value,
-      value: valueEl.value.value
+      date: formatBrDateToISO(dateEl.value.value),
+      value: formatCurrencyToInt(valueEl.value.value)
     });
 
     hide();

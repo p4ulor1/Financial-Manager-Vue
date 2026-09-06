@@ -1,6 +1,6 @@
 <script setup>
   import { onMounted, watch, shallowRef } from 'vue';
-  import { colors } from "@/assets/js/utils/colors";
+  import { colors, bodyColor } from "@/assets/js/utils/colors";
   import {
     Chart,
     BarController,
@@ -55,9 +55,15 @@
       },
       options: {
         scales: {
+          x: {
+            ticks: {
+              color: bodyColor.dark
+            }
+          },
           y: {
             ticks: {
-              callback: value => `${formatIntToCurrency(value)}`
+              callback: value => `${formatIntToCurrency(value)}`,
+              color: bodyColor.dark
             }
           }
         },

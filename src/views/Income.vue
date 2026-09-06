@@ -13,111 +13,128 @@
   // Domain dependecies
   import { dateStore } from '@/stores/dateStore';
   import MockIncomeRepository from '@/financialManager/repositories/MockIncomeRepository';
-  import getIncomesValueByYear from '@/financialManager/useCases/income/getIncomesValueByYear';
-  import getIncomesByMonth from '@/financialManager/useCases/income/getIncomesByMonth';
-  import getLast12MonthsAmount from '@/financialManager/useCases/getLast12MonthsAmount';
-  import addIncome from '@/financialManager/useCases/income/addIncome';
-  import removeIncome from '@/financialManager/useCases/income/removeIncome';
+  import IncomeUseCases from '@/financialManager/useCases/IncomeUseCases';
 
   const repo = new MockIncomeRepository();
+  const useCases = new IncomeUseCases(repo);
   const date = computed(() => dateStore._ISODate);
+  const budgetID = 'budgetIDMock';
   // variaveis de Dominio
-  const yearIncomesValue = ref(null);
+  const yearIncomesValues = ref(null);
   const monthIncomes = ref(null);
-  const last12MonthsAmount = ref(null);
   // dom
   const modalEl = ref(null);
   const chartEl = ref(null);
   // variaveis de front end dependentes do dominio
-  const tableData = computed(() => {
-    if (monthIncomes.value === null)
-    return null;
+  const transactionTable = ref(null);
+  const monthIncomeAmount = ref(null);
+  const statisticsData = ref(null);
 
-    return monthIncomes.value.map(income => ({
-      id: income.id,
-      data: [
-        income.description,
-        income.incomeType,
-        formatISOToBrDate(income.date),
-        formatIntToCurrency(income.value)
-      ]
-    }));
-  });
-  const monthIncome = computed(() => {
-    if (yearIncomesValue.value === null) return null;
-
-    const month = parseISODate(date.value).month;
-
-    return formatIntToCurrency(yearIncomesValue.value[month - 1]);
-  });
-  const statisticsData = computed(() => {
-    if (last12MonthsAmount.value === null) return [];
-
-    return statisticsBuilder(last12MonthsAmount.value, yearIncomesValue.value);
-  });
-
-  watch(yearIncomesValue, (newIncomesValue) => {
-    chartEl.value.setChartData(newIncomesValue);
-  }, { deep: true });
   // watch date
   watch(date, async (newDate, oldDate) => {
-    const incomes = await getIncomesByMonth(repo, date.value.substring(0,7));
-    monthIncomes.value = incomes;
+    if (parseISODate(newDate).year === parseISODate(oldDate).year) {
+      setMonthIncome(yearIncomesValues.value, parseISODate(newDate).month);
+    }
+    else {
+      const incomesValuesByYear = await useCases.getIncomesValuesByYear(
+        budgetID,
+        parseISODate(date.value).year.toString()
+      );
 
-    const parsedNewDate = parseISODate(newDate);
-    const parsedOldDate = parseISODate(oldDate);
+      yearIncomesValues.value = incomesValuesByYear;
+      setMonthIncome(incomesValuesByYear, parseISODate(newDate).month);
+      setChart(incomesValuesByYear);
+      setStatisticsData(incomesValuesByYear);
+    }
 
-    if (parsedNewDate.year !== parsedOldDate.year) {
-      const incomesValue = await getIncomesValueByYear(repo, parseISODate(date.value).year);
-      yearIncomesValue.value = incomesValue;
-    };
+    const incomesByMonth = await useCases.getIncomesByMonth(
+      budgetID,
+      newDate.slice(0, 7)
+    );
+
+    monthIncomes.value = incomesByMonth;
+    setIncomesTable(incomesByMonth);
   });
 
   // METHODS
-  async function onCreateIncome(income) {
-    let normalizedIncome = {...income};
-    normalizedIncome.date = formatBrDateToISO(income.date);
-    normalizedIncome.value = formatCurrencyToInt(income.value);
+  function setChart(incomesValuesByYear) {
+    chartEl.value.setChartData(incomesValuesByYear);
+  }
+  function setMonthIncome(incomesValuesByYear, month = null) {
+    if (month === null)
+      month = parseISODate(date.value).month;
 
-    const addedIncome = await addIncome(repo, normalizedIncome);
+    monthIncomeAmount.value = formatIntToCurrency(incomesValuesByYear[month - 1]);
+  }
+  function setIncomesTable(incomesByMonth) {
+    transactionTable.value = incomesByMonth
+      .map(monthIncome => {
+        return {
+          id: monthIncome.id,
+          data: [
+            monthIncome.description,
+            monthIncome.incomeType,
+            formatISOToBrDate(monthIncome.date),
+            formatIntToCurrency(monthIncome.value)
+          ]
+        };
+      });
+  }
+  function setStatisticsData(incomesValuesByYear) {
+    statisticsData.value = statisticsBuilder(incomesValuesByYear);
+  }
+  async function onCreateIncome(income) {
+    const addedIncome = await useCases.createIncome(budgetID, income);
     const month = parseISODate(addedIncome.date).month;
 
-    monthIncomes.value.push(addedIncome);
-    yearIncomesValue.value[month - 1] += addedIncome.value;
+    if (addedIncome.date.slice(0, 7) === date.value.slice(0, 7))
+      monthIncomes.value.push(addedIncome);
+    if (addedIncome.date.slice(0, 4) === date.value.slice(0, 4))
+      yearIncomesValues.value[month - 1] += addedIncome.value;
 
-    const parsedMonth = parseISODate(addedIncome.date).month - 1;
-    const currentMonthIncomeValue = yearIncomesValue.value[parsedMonth];
-
-    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
+    setChart(yearIncomesValues.value);
+    setMonthIncome(yearIncomesValues.value);
+    setIncomesTable(monthIncomes.value);
+    setStatisticsData(yearIncomesValues.value);
   };
-  async function onRemoveIncome(incomeTableData) {
+  async function onRemoveIncome(incomeTransactionTable) {
     const incomeToRemove = {
-      id: incomeTableData.id,
-      description: incomeTableData.data[0],
-      incomeType: incomeTableData.data[1],
-      date: formatBrDateToISO(incomeTableData.data[2]),
-      value: formatCurrencyToInt(incomeTableData.data[3])
+      id: incomeTransactionTable.id,
+      description: incomeTransactionTable.data[0],
+      incomeType: incomeTransactionTable.data[1],
+      date: formatBrDateToISO(incomeTransactionTable.data[2]),
+      value: formatCurrencyToInt(incomeTransactionTable.data[3]),
     };
-
-    const removedIncome = await removeIncome(repo, incomeToRemove);
+    const removedIncome = await useCases.deleteIncome(budgetID, incomeToRemove);
     const month = parseISODate(removedIncome.date).month;
 
-    monthIncomes.value = monthIncomes.value.filter(tb => tb.id !== removedIncome.id);
-    yearIncomesValue.value[month - 1] -= removedIncome.value;
+    if (removedIncome.date.slice(0, 7) === date.value.slice(0, 7))
+      monthIncomes.value = monthIncomes.value.filter(tb => tb.id !== removedIncome.id);
+    if (removedIncome.date.slice(0, 4) === date.value.slice(0, 4))
+      yearIncomesValues.value[month - 1] -= removedIncome.value;
 
-    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
+    setChart(yearIncomesValues.value);
+    setMonthIncome(yearIncomesValues.value);
+    setIncomesTable(monthIncomes.value);
+    setStatisticsData(yearIncomesValues.value);
   }
 
-  onMounted(() => {
-    getIncomesValueByYear(repo, parseISODate(date.value).year).then(incomesValue => {
-        yearIncomesValue.value = incomesValue;
-    });
-    getIncomesByMonth(repo, date.value.substring(0,7)).then(incomes => {
-      monthIncomes.value = incomes;
-    });
-    getLast12MonthsAmount(repo, dateStore.toCurrentISOString()).then((incomes) => {
-      last12MonthsAmount.value = incomes;
-    });
+  onMounted(async () => {
+    const incomesValuesByYear = await useCases.getIncomesValuesByYear(
+      budgetID,
+      parseISODate(date.value).year.toString()
+    );
+    const incomesByMonth = await useCases.getIncomesByMonth(
+      budgetID,
+      date.value.slice(0, 7)
+    );
+
+    yearIncomesValues.value = incomesValuesByYear;
+    monthIncomes.value = incomesByMonth;
+    setMonthIncome(incomesValuesByYear);
+    setChart(incomesValuesByYear);
+    setIncomesTable(incomesByMonth);
+    setStatisticsData(incomesValuesByYear);
   });
 </script>
 
@@ -127,7 +144,7 @@
     <section>
       <InfoCard
         :icon-color="0"
-        :info="[monthIncome]"
+        :info="[monthIncomeAmount]"
         :category="['Entrada']"
         :sub-info="['Total de entrada no mês']"
       ></InfoCard>
@@ -150,7 +167,7 @@
         title="Entradas"
         category="Tabela de entradas no mês"
         :headers="['Descrição', 'Tipo de Entrada', 'Data', 'Valor']"
-        :tableData="tableData"
+        :transactionTable="transactionTable"
         @delete-row="onRemoveIncome"
       ></Table>
     </section>

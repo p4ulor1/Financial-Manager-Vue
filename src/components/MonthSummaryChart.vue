@@ -1,6 +1,6 @@
 <script setup>
   import { onMounted, watch, shallowRef } from 'vue';
-  import { colors } from "@/assets/js/utils/colors";
+  import { colors, bodyColor } from "@/assets/js/utils/colors";
   import { getChartGradient } from "@/assets/js/utils/getChartGradient";
   import {
     Chart,
@@ -11,7 +11,9 @@
     CategoryScale,
     LinearScale
   } from 'chart.js';
-import { float2string } from '@/vueUtils/float2string';
+  import { float2string } from '@/vueUtils/float2string';
+  import { formatIntToCurrency } from '@/vueUtils/currencyUtils';
+
   Chart.register(
     BarController,
     BarElement,
@@ -24,19 +26,28 @@ import { float2string } from '@/vueUtils/float2string';
   let chart = null;
   const chartEl = shallowRef(null);
   const props = defineProps({
-    /**
-     * @type number[]
-     */
-    data: {type: Array, default: []}
+    title: {type: String, default: ''},
+    labels: {type: Array, default: ['Entrada', 'Despesa', 'Aporte', 'Resultado']}
   });
+
+  // METHODS
+  function setChartData(data) {
+    chart.data.datasets[0].data = data;
+
+    chart.update();
+  }
+
+  defineExpose({
+    setChartData
+  })
 
   onMounted(() => {
     chart = new Chart(chartEl.value, {
       type: 'bar',
       data: {
-        labels: ['Entrada', 'Despesa', 'Aporte', 'Resultado'],
+        labels: props.labels,
         datasets: [{
-          data: props.data,
+          data: [],
           backgroundColor: context => {
             const { chart, index } = context;
             const { ctx, chartArea } = chart;
@@ -56,10 +67,15 @@ import { float2string } from '@/vueUtils/float2string';
       },
       options: {
         scales: {
+          x: {
+            ticks: {
+              color: bodyColor.dark
+            }
+          },
           y: {
             ticks: {
-              callback: value => `${float2string(value)}`,
-              stepSize: 1000
+              callback: value => `${formatIntToCurrency(value)}`,
+              color: bodyColor.dark
             }
           }
         },
@@ -67,7 +83,7 @@ import { float2string } from '@/vueUtils/float2string';
           tooltip: {
             callbacks: {
               label: ctx => {
-                return `R$ ${float2string(ctx.parsed.y)}`;
+                return `R$ ${formatIntToCurrency(ctx.parsed.y)}`;
               }
             }
           }
@@ -76,18 +92,18 @@ import { float2string } from '@/vueUtils/float2string';
     });
   });
 
-  watch(() => props.data, () => {
-    chart.data.datasets[0].data = props.data
-
-    chart.update();
-  });
+  // watch(() => props.data, () => {
+  //   chart.data.datasets[0].data = props.data
+  //
+  //   chart.update();
+  // });
 </script>
 
 <template>
   <div class="card card-chart">
     <div class="card-header">
       <p class="card-category">Resultado do Mês</p>
-      <h2 class="card-title">Resultado</h2>
+      <h2 class="card-title">{{ props.title }}</h2>
     </div>
     <div class="card-body">
       <canvas class="chart" ref="chartEl"></canvas>

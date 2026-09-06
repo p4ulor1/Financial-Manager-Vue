@@ -13,129 +13,174 @@
   import { ref, onMounted, computed, watch } from 'vue';
   // Domain
   import MockContributionRepository from "@/financialManager/repositories/MockContributionRepository";
-  import getContributionsValueByYear from "@/financialManager/useCases/contribution/getContributionsValueByYear";
-  import getContributionsByMonth from "@/financialManager/useCases/contribution/getContributionsByMonth";
-  import getLast12MonthsAmount from "@/financialManager/useCases/getLast12MonthsAmount";
-  import getTotalContributions from "@/financialManager/useCases/contribution/getTotalContributions";
-  import addContribution from "@/financialManager/useCases/contribution/addContribution";
-  import removeContribution from "@/financialManager/useCases/contribution/removeContribution";
-  import redeemContribution from "@/financialManager/useCases/contribution/redeemContribution";
+  import MockIncomeRepository from "@/financialManager/repositories/MockIncomeRepository";
+  import ContributionUseCases from "@/financialManager/useCases/ContributionUseCases";
 
-  const repo = new MockContributionRepository();
+  const repo = new MockContributionRepository(null);
+  const useCases = new ContributionUseCases(repo);
+  const budgetID = 'budgetIDMock';
   const date = computed(() => dateStore._ISODate);
   // DOM
   const chartEl = ref(null);
   const createContributionEl = ref(null);
   // Variáveis de domínio
-  const yearContributionsValue = ref(null);
+  const yearContributionsValues = ref(null);
   const monthContributions = ref(null);
-  const last12MonthsAmount = ref(null);
   const totalContribution = ref(null);
   // variaveis de front end dependentes do dominio
-  const tableData = computed(() => {
-    if (monthContributions.value === null) return null;
-
-    return monthContributions.value.map(contribution => ({
-      id: contribution.id,
-      data: [
-        contribution.description,
-        formatISOToBrDate(contribution.date),
-        formatIntToCurrency(contribution.value),
-      ]
-    }));
-  })
-  const monthContribution = computed(() => {
-    if (yearContributionsValue.value === null) return null;
-
-    const month = parseISODate(date.value).month;
-
-    return formatIntToCurrency(yearContributionsValue.value[month - 1]);
-  })
+  const transactionTable = ref(null);
+  const monthContributionAmount = ref(null);
+  const statisticsData = ref(null);
   const totalContributionView = computed(() => {
     if (totalContribution.value === null) return null;
 
     return formatIntToCurrency(totalContribution.value);
   })
-  const statisticsData = computed(() => {
-    if (last12MonthsAmount.value === null) return null;
 
-    return statisticsBuilder(last12MonthsAmount.value, yearContributionsValue.value);
-  });
-
-  // Watch yearContributionsValue to update the chart
-  watch(yearContributionsValue, (newContributionsValue) => {
-    chartEl.value.setChartData(newContributionsValue);
-  }, { deep: true });
   // Watch date
   watch(date, async (newDate, oldDate) => {
-    const contributions = await getContributionsByMonth(repo, date.value);
-    monthContributions.value = contributions;
+    if (parseISODate(newDate).year === parseISODate(oldDate).year) {
+      setMonthContribution(yearContributionsValues.value, parseISODate(newDate).month);
+    }
+    else {
+      const contributionsValuesByYear = await useCases.getContributionsValuesByYear(
+        budgetID,
+        parseISODate(date.value).year.toString()
+      );
 
-    const parsedNewDate = parseISODate(newDate);
-    const parsedOldDate = parseISODate(oldDate);
+      yearContributionsValues.value = contributionsValuesByYear;
+      setChart(contributionsValuesByYear);
+      setMonthContribution(contributionsValuesByYear);
+      setStatisticsData(contributionsValuesByYear);
+    }
 
-    if (parsedNewDate.year !== parsedOldDate.year) {
-      const contributionsValue = await getContributionsValueByYear(repo, parseISODate(date.value).year);
-      yearContributionsValue.value = contributionsValue;
-    };
+    const contributionsByMonth = await useCases.getContributionsByMonth(
+      budgetID,
+      date.value.slice(0, 7)
+    );
+
+    monthContributions.value = contributionsByMonth;
+    setContributionsTable(contributionsByMonth);
   });
 
-  // METHODS
+  // Methods
+  function setChart(contributionsValuesByYear) {
+    chartEl.value.setChartData(contributionsValuesByYear);
+  }
+  function setMonthContribution(contributionsValuesByYear, month = null) {
+    if (month === null)
+      month = parseISODate(date.value).month;
+
+    monthContributionAmount.value = formatIntToCurrency(contributionsValuesByYear[month - 1]);
+  }
+  function setContributionsTable(contributionsByMonth) {
+    transactionTable.value = contributionsByMonth
+      .map(monthExpense => {
+        return {
+          id: monthExpense.id,
+          data: [
+            monthExpense.description,
+            formatISOToBrDate(monthExpense.date),
+            formatIntToCurrency(monthExpense.value)
+          ]
+        };
+      });
+  }
+  function setStatisticsData(contributionsValuesByYear) {
+    statisticsData.value = statisticsBuilder(contributionsValuesByYear);
+  }
+  function addTotalContribution(value) {
+    totalContribution.value += value;
+  }
+  function subtractTotalContribution(value) {
+    totalContribution.value -= value;
+  }
   async function onCreateContribution(contribution) {
-    const parsedCreateContribution = {
-      description: contribution.description,
-      date: formatBrDateToISO(contribution.date),
-      value: formatCurrencyToInt(contribution.value)
-    };
-    const createdContribution = await addContribution(repo, parsedCreateContribution);
+    const createdContribution = await useCases.createContribution(budgetID, contribution);
     const month = parseISODate(createdContribution.date).month;
 
-    monthContributions.value.push(createdContribution);
-    yearContributionsValue.value[month - 1] += createdContribution.value;
-    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
+    if (createdContribution.date.slice(0, 7) === date.value.slice(0, 7))
+      monthContributions.value.push(createdContribution);
+    if (createdContribution.date.slice(0, 4) === date.value.slice(0, 4))
+      yearContributionsValues.value[month - 1] += createdContribution.value;
+
+    addTotalContribution(createdContribution.value);
+    setChart(yearContributionsValues.value);
+    setMonthContribution(yearContributionsValues.value);
+    setContributionsTable(monthContributions.value);
+    setStatisticsData(yearContributionsValues.value);
   }
-  async function onDeleteContribution(dtbContribution) {
-    const parsedRemoveContribution = {
-      id: dtbContribution.id,
-      description: dtbContribution.data[0],
-      date: formatBrDateToISO(dtbContribution.data[1]),
-      value: formatCurrencyToInt(dtbContribution.data[2])
+  async function onDeleteContribution(contributionTable) {
+    const contributionToRemove = {
+      id: contributionTable.id,
+      description: contributionTable.data[0],
+      date: formatBrDateToISO(contributionTable.data[1]),
+      value: formatCurrencyToInt(contributionTable.data[2]),
     };
-    const removedContribution = await removeContribution(repo, parsedRemoveContribution);
+    const removedContribution = await useCases.deleteContribution(
+      budgetID,
+      contributionToRemove
+    );
     const month = parseISODate(removedContribution.date).month;
 
-    monthContributions.value = monthContributions.value.filter(dtb => dtb.id !== removedContribution.id);
-    yearContributionsValue.value[month - 1] -= removedContribution.value;
-    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
+    if (removedContribution.date.slice(0, 7) === date.value.slice(0, 7))
+      monthContributions.value = monthContributions.value.filter(dtb => dtb.id !== removedContribution.id);
+    if (removedContribution.date.slice(0, 4) === date.value.slice(0, 4))
+      yearContributionsValues.value[month - 1] -= removedContribution.value;
+
+    subtractTotalContribution(removedContribution.value);
+    setChart(yearContributionsValues.value);
+    setMonthContribution(yearContributionsValues.value);
+    setContributionsTable(monthContributions.value);
+    setStatisticsData(yearContributionsValues.value);
   }
-  async function onRedeemContribution(dtbContribution) {
-    const parsedRemoveContribution = {
-      id: dtbContribution.id,
-      description: dtbContribution.data[0],
-      date: formatBrDateToISO(dtbContribution.data[1]),
-      value: formatCurrencyToInt(dtbContribution.data[2])
+  async function onRedeemContribution(contributionTable) {
+    const incomeRepository = new MockIncomeRepository(null);
+    const contributionToRedeemed = {
+      id: contributionTable.id,
+      description: contributionTable.data[0],
+      date: formatBrDateToISO(contributionTable.data[1]),
+      value: formatCurrencyToInt(contributionTable.data[2]),
     };
-    const redeemedContribution = await removeContribution(repo, parsedRemoveContribution);
+    const redeemedContribution = await useCases.redeemContribution(
+      budgetID,
+      contributionToRedeemed,
+      dateStore.toCurrentISOString(),
+      incomeRepository
+    );
     const month = parseISODate(redeemedContribution.date).month;
 
-    monthContributions.value = monthContributions.value.filter(dtb => dtb.id !== redeemedContribution.id);
-    yearContributionsValue.value[month - 1] -= redeemedContribution.value;
-    last12MonthsAmount.value = await getLast12MonthsAmount(repo, date.value);
+    if (redeemedContribution.date.slice(0, 7) === date.value.slice(0, 7))
+      monthContributions.value = monthContributions.value
+        .filter(dtb => dtb.id !== redeemedContribution.id);
+    if (redeemedContribution.date.slice(0, 4) === date.value.slice(0, 4))
+      yearContributionsValues.value[month - 1] -= redeemedContribution.value;
+
+    subtractTotalContribution(redeemedContribution.value);
+    setChart(yearContributionsValues.value);
+    setMonthContribution(yearContributionsValues.value);
+    setContributionsTable(monthContributions.value);
+    setStatisticsData(yearContributionsValues.value);
   }
 
-  onMounted(() => {
-    getContributionsValueByYear(repo, parseISODate(date.value).year).then(values => {
-      yearContributionsValue.value = values;
-    });
-    getContributionsByMonth(repo, date.value).then(contributions => {
-      monthContributions.value = contributions;
-    });
-    getLast12MonthsAmount(repo, date.value).then(amount => {
-      last12MonthsAmount.value = amount;
-    });
-    getTotalContributions(repo).then(total => {
-      totalContribution.value = total;
-    })
+  onMounted(async () => {
+    const contributionsValuesByYear = await useCases.getContributionsValuesByYear(
+      budgetID,
+      parseISODate(date.value).year.toString()
+    );
+    const contributionsByMonth = await useCases.getContributionsByMonth(
+      budgetID,
+      date.value.slice(0, 7)
+    );
+    const totalContributionsAmount = await useCases.getTotalContributions(budgetID);
+
+    yearContributionsValues.value = contributionsValuesByYear;
+    monthContributions.value = contributionsByMonth;
+    totalContribution.value = totalContributionsAmount;
+    setChart(contributionsValuesByYear);
+    setMonthContribution(contributionsValuesByYear);
+    setContributionsTable(contributionsByMonth);
+    setStatisticsData(contributionsValuesByYear);
   });
 </script>
 
@@ -144,13 +189,13 @@
     <section>
       <InfoCard
       :icon-color="2"
-      :info="[totalContributionView, monthContribution]"
+      :info="[totalContributionView, monthContributionAmount]"
       :category="['Aporte Total', 'Aporte do mês']"
       :sub-info="[
-        'Aporte Total: Representa o acumulado de todo o período',
+        'Aporte Total: Representa o acumulado de todos os anos',
         'Aporte do mês: Representa o total do mês'
       ]"
-      icon="bi-piggy-bank-fill  "
+      icon="bi-piggy-bank-fill"
       ></InfoCard>
     </section>
 
@@ -170,7 +215,7 @@
         @redeem-contribution="onRedeemContribution"
         category="Tabela de aporte no mês"
         :headers="['Objetivo', 'Data', 'Valor']"
-        :table-data="tableData"
+        :transaction-table="transactionTable"
         :isContribution="true"
       ></Table>
     </section>

@@ -131,12 +131,12 @@
             <span class="menu-label">Aporte</span>
           </a>
         </li>
-        <li ref="calculator">
+        <!-- <li ref="calculator">
           <a class="menu-item" @click="changeRoute(routerManager.goToCalculator)">
             <i class="bi bi-calculator menu-icon"></i>
             <span class="menu-label">Calculadoras</span>
           </a>
-        </li>
+        </li> -->
         <li ref="budgets">
           <a class="menu-item" @click="changeRoute(routerManager.goToBudget)">
             <i class="bi bi-journals menu-icon"></i>

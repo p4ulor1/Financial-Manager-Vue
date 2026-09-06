@@ -28,6 +28,12 @@ export const dateStore = reactive({
   /*
    * returns {string} Date in YYYY-MM-DD format
    */
+  toPresentISOString() {
+    return formatBrDateToISO(this._currentDate.toLocaleString(LOCALE, LOCALE_STRING_OPTIONS));
+  },
+  /*
+   * returns {string} Date in YYYY-MM-DD format
+   */
   toISOString() {
     return formatBrDateToISO(this._date.toLocaleString(LOCALE, LOCALE_STRING_OPTIONS));
   },

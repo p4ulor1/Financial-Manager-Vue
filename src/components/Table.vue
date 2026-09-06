@@ -1,20 +1,30 @@
 <script setup>
+  import { toRaw } from 'vue';
+
   const props = defineProps({
     category: {type: String},
     title: {type: String},
     headers: {type: Array},
     /*
-     * @typedef {Object} TableData
+     * @typedef {Object} TransactionTable
      * @property {string} id
      * @property {Array} data
      *
      * @type {Array<TableData>}
      */
-    tableData: {type: Object},
+    transactionTable: {type: Object},
     isContribution: {default: false}
   });
 
-  defineEmits(['deleteRow', 'redeemContribution']);
+  const emit = defineEmits(['deleteRow', 'redeemContribution']);
+
+  // METHODS
+  function onDeleteRow(tableData) {
+    emit('deleteRow', toRaw(tableData));
+  }
+  function onRedeemContribution(tableData) {
+    emit('redeemContribution', tableData)
+  }
 </script>
 
 <template>
@@ -37,20 +47,20 @@
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-if="props.tableData" v-for="(row, rowIndex) in props.tableData">
+          <tr v-if="props.transactionTable" v-for="(row, rowIndex) in props.transactionTable">
             <td v-for="(value, dataIndex) in row.data">
               <p v-if="dataIndex === 0" class="text-start m-0">{{ value }}</p>
               <p v-else-if="dataIndex === props.headers.length - 1" class="text-end m-0">{{ value }}</p>
               <p v-else class="text-center m-0">{{ value }}</p>
             </td>
-            <td @click="$emit('deleteRow', props.tableData[rowIndex])">
+            <td @click="onDeleteRow(props.transactionTable[rowIndex])">
               <div class="d-flex justify-content-center">
                 <i class="bi bi-trash3-fill"></i>
               </div>
             </td>
             <td
               v-if="props.isContribution"
-              @click="$emit('redeemContribution', props.tableData[rowIndex])"
+              @click="onRedeemContribution(props.transactionTable[rowIndex])"
             >
               <div class="d-flex justify-content-center">
                 <i class="bi bi-cash-coin"></i>

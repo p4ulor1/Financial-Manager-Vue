@@ -1,6 +1,7 @@
-/*
+/**
  * Exported Modules
  *
+ * isValidMonthDate
  * StrDateBuilder
  * parseISODate
  * parseBrDate
@@ -12,6 +13,27 @@
  * formatISOToBrDate
  */
 
+ function isValidMonthDate(date) {
+   if (typeof date !== 'string')
+     return false;
+   else if (date.length !== 7)
+     return false;
+
+   const matchDate = date.match(/\d{4}-\d{2}/);
+
+   if (matchDate === null)
+     return false;
+
+   const year = date.slice(0, 4);
+   const month = date.slice(5);
+
+   if (Number.parseInt(year) < 1000 || Number.parseInt(year) > 9999)
+     return false;
+   else if (Number.parseInt(month) < 1 || Number.parseInt(month) > 12)
+     return false;
+
+   return true;
+ }
 /*
  * @param {number} day
  * @param {number} month
@@ -84,19 +106,26 @@ function isValidDate(day, month, year) {
 
 /*
  * @param {string} date
- * @returns {string|false}
+ * @returns {Bolean}
 */
 function isValidISODate(date) {
-  if (typeof date !== 'string') return false;
-  if (date.length !== 10) return false;
+  if (typeof date !== 'string')
+    return false;
+  else if (date.length !== 10)
+    return false;
+
+  const matchDate = date.match(/\d{4}-\d{2}-\d{2}/);
+
+  if (matchDate.length !== 1)
+    return false;
 
   const parsedDate = parseISODate(date);
 
-  if (isValidDate(parsedDate.day, parsedDate.month, parsedDate.year))
-    return date;
-  else
+  if (!isValidDate(parsedDate.day, parsedDate.month, parsedDate.year))
     return false;
-};
+
+  return true;
+}
 
 /*
  * @param {string} date
@@ -150,6 +179,7 @@ function formatISOToBrDate(stringDate) {
 };
 
 export {
+  isValidMonthDate,
   StrDateBuilder,
   parseISODate,
   parseBrDate,
