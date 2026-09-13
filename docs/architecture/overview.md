@@ -1,4 +1,4 @@
-# Architecture Overview
+# Visão Geral da Arquitetura
 
 ## 1. Propósito
 
@@ -14,13 +14,18 @@ Este documento descreve a estrutura arquitetural atual. Detalhes específicos so
 
 A aplicação é organizada nas seguintes principais areas:
 
----
-title: Overview
----
-flowchart TB
-    Presentation --> Application
-    Application --> Data_access
-    Data_access --> Infrastructure
+```text
+Presentation
+    │
+    ▼
+Application
+    │
+    ▼
+Data Access
+    │
+    ▼
+Infrastructure
+```
 
 ### Presentation
 
@@ -67,16 +72,31 @@ Esta camada foi planejada mas ainda não foi implementada. A ferramenta de banco
 
 O fluxo da interface de usuário para o acesso de dados é:
 
----
-title: Dependency Flow
----
-flowchart TB
-    View -->|invokes| UseCases
-    UseCases -->|uses| RepositoryInterface
-    MockRepository -->|implements| RepositoryInterface
-    ConcreteRepository -->|implements| RepositoryInterface
-    ConcreteRepository -->|uses| Infrastructure
-    Infrastructure -->|uses| db[(Database)]
+```text
+View
+ │
+ │ invokes
+ ▼
+Use Case
+ │
+ │ uses
+ ▼
+Repository Interface
+ │
+ │ implements
+ │  
+ ├── Mock Repository       (Atual)
+ │
+ └── Concrete Repository   (Futuro)
+          │
+          │ uses
+          ▼
+      Infrastructure
+          │
+          │ uses
+          ▼
+       Database
+```
 
 Uma `View` é responsável por criar as dependências exigidas para o seu caso de uso a invocar esses casos de uso em resposta as ações do usuário.
 
