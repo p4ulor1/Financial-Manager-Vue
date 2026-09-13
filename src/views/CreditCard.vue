@@ -206,6 +206,10 @@ transactionTable<script setup>
 
     const month = parseISODate(date.value).month;
     carouselEl.value.addCreditCard(carouselCreditCardBuilder(creditCardYearInfos));
+<<<<<<< HEAD
+=======
+    console.log(creditCardYearInfos);
+>>>>>>> 05feb26c952ffc503908cfa2c2d00af4b9bf273e
   }
   function onDeleteCreditCardRequest(creditCardID) {
     carouselEl.value.removeCreditCard(creditCardID);
